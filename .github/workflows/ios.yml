@@ -51,9 +51,17 @@ jobs:
             CODE_SIGNING_REQUIRED=NO \
             build
 
+      - name: Locate generated app
+        id: locate-app
+        run: |
+          APP_PATH="$(find build/ios-simulator -type d -name '*.app' -print -quit)"
+          test -n "$APP_PATH"
+          echo "Found app: $APP_PATH"
+          echo "app_path=$APP_PATH" >> "$GITHUB_OUTPUT"
+
       - name: Upload simulator app
         uses: actions/upload-artifact@v4
         with:
           name: Movva-iOS-Simulator-Debug
-          path: build/ios-simulator/Build/Products/Debug-iphonesimulator/iosApp.app
+          path: ${{ steps.locate-app.outputs.app_path }}
           if-no-files-found: error
