@@ -13,7 +13,7 @@ permissions:
 jobs:
   ios-simulator-build:
     name: Build iOS Simulator app
-    runs-on: macos-14
+    runs-on: macos-26
     timeout-minutes: 30
 
     steps:
@@ -28,6 +28,13 @@ jobs:
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
+
+      - name: Select latest Xcode
+        run: |
+          XCODE_PATH="$(find /Applications -maxdepth 1 -type d -name 'Xcode*.app' | sort -V | tail -n 1)"
+          test -n "$XCODE_PATH"
+          sudo xcode-select -s "$XCODE_PATH/Contents/Developer"
+          xcodebuild -version
 
       - name: Build iOS app
         env:
