@@ -1,37 +1,29 @@
 name: iOS device IPA (personal sideload)
-
 on:
   workflow_dispatch:
-
 permissions:
   contents: read
-
 jobs:
   ios-device-ipa:
     name: Build iOS device IPA
     runs-on: macos-26
     timeout-minutes: 40
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
-
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
-
       - name: Select latest Xcode
         run: |
           XCODE_PATH="$(find /Applications -maxdepth 1 -type d -name 'Xcode*.app' | sort -V | tail -n 1)"
           test -n "$XCODE_PATH"
           sudo xcode-select -s "$XCODE_PATH/Contents/Developer"
           xcodebuild -version
-
       - name: Archive iOS app for physical device
         env:
           CI: true
@@ -46,8 +38,8 @@ jobs:
             -archivePath build/Movva.xcarchive \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
+            IPHONEOS_DEPLOYMENT_TARGET=16.0 \
             archive
-
       - name: Create unsigned IPA
         run: |
           APP_PATH="build/Movva.xcarchive/Products/Applications/Movva.app"
@@ -57,7 +49,6 @@ jobs:
           cp -R "$APP_PATH" build/Payload/Movva.app
           ditto -c -k --sequesterRsrc --keepParent build/Payload build/Movva-device-unsigned.ipa
           unzip -l build/Movva-device-unsigned.ipa | sed -n '1,30p'
-
       - name: Upload device IPA
         uses: actions/upload-artifact@v4
         with:
