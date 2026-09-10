@@ -17,3 +17,4 @@ captures
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
 node_modules/
+shared/src/commonMain/kotlin/br/com/movva/env/Env.kt
