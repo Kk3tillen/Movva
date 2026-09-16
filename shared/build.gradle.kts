@@ -45,11 +45,13 @@ abstract class GenerateSupabaseConfig : DefaultTask() {
 val generateSupabaseConfig = tasks.register<GenerateSupabaseConfig>("generateSupabaseConfig") {
     supabaseUrl.set(
         localProperties.getProperty("supabase.url")
-            ?: error("Defina supabase.url no local.properties")
+            ?: System.getenv("SUPABASE_URL")
+            ?: error("Defina supabase.url no local.properties (local) ou a env var SUPABASE_URL (CI)")
     )
     supabaseAnonKey.set(
         localProperties.getProperty("supabase.anonKey")
-            ?: error("Defina supabase.anonKey no local.properties")
+            ?: System.getenv("SUPABASE_ANON_KEY")
+            ?: error("Defina supabase.anonKey no local.properties (local) ou a env var SUPABASE_ANON_KEY (CI)")
     )
     outputDir.set(layout.buildDirectory.dir("generated/supabaseConfig/commonMain/kotlin"))
 }
