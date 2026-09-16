@@ -56,7 +56,7 @@ Na Sprint 0, estão previstas as seguintes tarefas:
 
 ## Plataforma-alvo
 
-O desenvolvimento do aplicativo utilizará a tecnologia Kotlin Multiplatform (KMP), compartilhando a interface gráfica através do Compose Multiplatform. Em virtude dessa escolha arquitetural, as plataformas-alvo estabelecidas são Android e iOS. Essa estratégia técnica é justificada por maximizar o alcance do produto no mercado. Ao abranger os dois principais sistemas operacionais com uma base de código unificada, o Movva garante que um número significativamente maior de pessoas possa utilizar o aplicativo, otimizando o esforço de desenvolvimento da equipe.
+O desenvolvimento do aplicativo utilizará a tecnologia Kotlin Multiplatform (KMP), compartilhando a interface gráfica através do Compose Multiplatform. Em virtude dessa escolha arquitetural, as plataformas-alvo estabelecidas são Android e iOS. Essa estratégia técnica é justificada por maximizar o alcance do produto no mercado e por estar diretamente alinhada ao grande diferencial do Movva: a gamificação e os desafios sociais. Como o aplicativo permite que amigos formem grupos para se incentivar, restringir o lançamento a apenas um sistema operacional criaria uma barreira tecnológica entre os usuários. Ao abranger os dois principais sistemas operacionais com uma base de código unificada, o Movva garante que qualquer pessoa possa se juntar aos desafios, otimizando simultaneamente o esforço de desenvolvimento da equipe.
 
 
 ## Estratégia de Backend
