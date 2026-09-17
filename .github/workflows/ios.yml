@@ -39,6 +39,8 @@ jobs:
       - name: Build iOS app
         env:
           CI: true
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: |
           chmod +x ./gradlew
           xcodebuild \

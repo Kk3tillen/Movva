@@ -1,0 +1,13 @@
+CREATE TABLE perfilEntity (
+    userId TEXT NOT NULL PRIMARY KEY,
+    nome TEXT NOT NULL,
+    userTag TEXT NOT NULL,
+    atualizadoEm INTEGER NOT NULL
+);
+
+selectPerfil:
+SELECT * FROM perfilEntity WHERE userId = ?;
+
+upsertPerfil:
+INSERT OR REPLACE INTO perfilEntity (userId, nome, userTag, atualizadoEm)
+VALUES (?, ?, ?, ?);
