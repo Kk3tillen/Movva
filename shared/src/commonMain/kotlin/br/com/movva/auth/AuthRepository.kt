@@ -1,29 +1,37 @@
 package br.com.movva.auth
 
-import kotlinx.coroutines.delay
-
-sealed interface AuthError {
-    data object InvalidCredentials : AuthError
-    data object NetworkError : AuthError
-    data class Unknown(val message: String) : AuthError
-}
-
-sealed interface AuthResult {
-    data object Success : AuthResult
-    data class Error(val error: AuthError) : AuthResult
-}
+import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.auth.auth
+import io.github.jan.supabase.auth.providers.builtin.Email
+import io.github.jan.supabase.auth.status.SessionStatus
+import io.github.jan.supabase.auth.user.UserSession
+import kotlinx.coroutines.flow.StateFlow
 
 interface AuthRepository {
-    suspend fun login(email: String, password: String): AuthResult
+    suspend fun login(email: String, senha: String): Result<Unit>
+    suspend fun logout()
+    fun currentSession(): UserSession?
+    val sessionStatus: StateFlow<SessionStatus>
 }
 
-class FakeAuthRepository : AuthRepository {
-    override suspend fun login(email: String, password: String): AuthResult {
-        delay(1200)
-        return if (email == "erro@movva.com") {
-            AuthResult.Error(AuthError.InvalidCredentials)
-        } else {
-            AuthResult.Success
+class AuthRepositoryImpl(
+    private val client: SupabaseClient
+) : AuthRepository {
+
+    override suspend fun login(email: String, senha: String): Result<Unit> = runCatching {
+        client.auth.signInWith(Email) {
+            this.email = email
+            this.password = senha
         }
     }
+
+    override suspend fun logout() {
+        client.auth.signOut()
+    }
+
+    override fun currentSession(): UserSession? =
+        client.auth.currentSessionOrNull()
+
+    override val sessionStatus: StateFlow<SessionStatus>
+        get() = client.auth.sessionStatus
 }
