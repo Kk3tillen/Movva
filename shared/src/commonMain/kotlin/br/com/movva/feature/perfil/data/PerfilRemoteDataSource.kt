@@ -15,9 +15,9 @@ class PerfilRemoteDataSourceImpl(
 ) : PerfilRemoteDataSource {
 
     override suspend fun getPerfil(userId: String): Perfil {
-        val dto = supabaseClient.from("perfis")
+        val dto = supabaseClient.from("perfil_publico")
             .select {
-                filter { eq("user_id", userId) }
+                filter { eq("id", userId) }
             }
             .decodeSingle<PerfilDto>()
         return Perfil(nome = dto.nome, userTag = dto.userTag)
@@ -26,6 +26,6 @@ class PerfilRemoteDataSourceImpl(
 
 @Serializable
 private data class PerfilDto(
-    val nome: String,
+    @SerialName("name") val nome: String,
     @SerialName("user_tag") val userTag: String
 )

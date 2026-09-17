@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -26,7 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -34,10 +34,9 @@ import br.com.movva.core.clipboard.ClipboardManager
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
-private val MovvaOrange = Color(0xFFE34200)
-
 @Composable
 fun PerfilScreen(
+    onLogout: () -> Unit = { },
     viewModel: PerfilViewModel = koinViewModel(),
     clipboardManager: ClipboardManager = koinInject()
 ) {
@@ -63,6 +62,7 @@ fun PerfilScreen(
                     nome = state.nome,
                     userTag = state.userTag,
                     onCopiar = { clipboardManager.copy(state.userTag) },
+                    onLogout = onLogout,
                     snackbarHostState = snackbarHostState
                 )
             }
@@ -75,35 +75,46 @@ private fun PerfilConteudo(
     nome: String,
     userTag: String,
     onCopiar: () -> Unit,
+    onLogout: () -> Unit,
     snackbarHostState: SnackbarHostState
 ) {
     var mostrarFeedback by remember { mutableStateOf(false) }
+    val colors = MaterialTheme.colorScheme
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MovvaOrange, RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp))
+            .background(colors.primary, RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp))
             .padding(horizontal = 24.dp, vertical = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "Perfil",
-            color = Color.White,
-            fontWeight = FontWeight.Bold,
-            fontSize = 20.sp
-        )
+        Box(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = "Perfil",
+                modifier = Modifier.align(Alignment.Center),
+                color = colors.onPrimary,
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp
+            )
+            IconButton(
+                onClick = onLogout,
+                modifier = Modifier.align(Alignment.CenterEnd)
+            ) {
+                Text("⎋", color = colors.onPrimary, fontSize = 18.sp)
+            }
+        }
 
         Box(
             modifier = Modifier
                 .padding(top = 16.dp)
                 .size(88.dp)
-                .border(3.dp, Color.White.copy(alpha = 0.6f), CircleShape)
-                .background(Color.White, CircleShape),
+                .border(3.dp, colors.onPrimary.copy(alpha = 0.6f), CircleShape)
+                .background(colors.onPrimary, CircleShape),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = nome.firstOrNull()?.uppercase() ?: "?",
-                color = MovvaOrange,
+                color = colors.primary,
                 fontWeight = FontWeight.Bold,
                 fontSize = 32.sp
             )
@@ -112,7 +123,7 @@ private fun PerfilConteudo(
         Text(
             text = nome,
             modifier = Modifier.padding(top = 12.dp),
-            color = Color.White,
+            color = colors.onPrimary,
             fontWeight = FontWeight.Bold,
             fontSize = 20.sp
         )
@@ -123,14 +134,14 @@ private fun PerfilConteudo(
         ) {
             Text(
                 text = userTag,
-                color = Color.White.copy(alpha = 0.8f),
+                color = colors.onPrimary.copy(alpha = 0.8f),
                 fontSize = 13.sp
             )
             IconButton(onClick = {
                 onCopiar()
                 mostrarFeedback = true
             }) {
-                Text("⧉", color = Color.White)
+                Text("⧉", color = colors.onPrimary)
             }
         }
     }

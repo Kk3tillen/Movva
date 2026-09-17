@@ -1,0 +1,16 @@
+CREATE TABLE sessaoEntity (
+    id INTEGER NOT NULL PRIMARY KEY DEFAULT 0 CHECK (id = 0),
+    userId TEXT NOT NULL,
+    nome TEXT NOT NULL,
+    userTag TEXT NOT NULL
+);
+
+selectSessao:
+SELECT * FROM sessaoEntity WHERE id = 0;
+
+upsertSessao:
+INSERT OR REPLACE INTO sessaoEntity (id, userId, nome, userTag)
+VALUES (0, ?, ?, ?);
+
+limparSessao:
+DELETE FROM sessaoEntity;

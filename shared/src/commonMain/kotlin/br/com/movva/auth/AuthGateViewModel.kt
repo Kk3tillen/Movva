@@ -2,11 +2,8 @@ package br.com.movva.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.jan.supabase.auth.status.SessionStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 sealed interface StartDestination {
@@ -24,14 +21,22 @@ class AuthGateViewModel(
 
     init {
         viewModelScope.launch {
-            val status = authRepository.sessionStatus
-                .filter { it !is SessionStatus.Initializing }
-                .first()
-
-            _destination.value = when (status) {
-                is SessionStatus.Authenticated -> StartDestination.Home
-                else -> StartDestination.Login
+            _destination.value = if (authRepository.currentUser() != null) {
+                StartDestination.Home
+            } else {
+                StartDestination.Login
             }
+        }
+    }
+
+    fun onLoginSuccess() {
+        _destination.value = StartDestination.Home
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            authRepository.logout()
+            _destination.value = StartDestination.Login
         }
     }
 }
