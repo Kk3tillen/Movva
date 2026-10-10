@@ -4,19 +4,19 @@ CREATE TABLE treinoEntity (
     nome TEXT NOT NULL,
     tipo TEXT NOT NULL,
     duracaoMin INTEGER,
-    data TEXT NOT NULL,
+    dataTreino TEXT NOT NULL,
     observacoes TEXT,
     sincronizado INTEGER NOT NULL DEFAULT 0
 );
 
 selectTreinos:
-SELECT * FROM treinoEntity WHERE userId = ? ORDER BY data DESC;
+SELECT * FROM treinoEntity WHERE userId = ? ORDER BY dataTreino DESC;
 
 selectNaoSincronizados:
 SELECT * FROM treinoEntity WHERE userId = ? AND sincronizado = 0;
 
 upsertTreino:
-INSERT OR REPLACE INTO treinoEntity (id, userId, nome, tipo, duracaoMin, data, observacoes, sincronizado)
+INSERT OR REPLACE INTO treinoEntity (id, userId, nome, tipo, duracaoMin, dataTreino, observacoes, sincronizado)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?);
 
 marcarSincronizado:
