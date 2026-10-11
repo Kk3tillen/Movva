@@ -7,9 +7,12 @@ import br.com.movva.feature.treino.data.TreinoRemoteDataSourceImpl
 import br.com.movva.feature.treino.data.TreinoRepository
 import br.com.movva.feature.treino.data.TreinoRepositoryImpl
 import org.koin.dsl.module
+import br.com.movva.feature.treino.ui.TreinoViewModel
+import org.koin.core.module.dsl.viewModel
 
 val treinoModule = module {
     single<TreinoLocalDataSource> { TreinoLocalDataSourceImpl(get()) }
     single<TreinoRemoteDataSource> { TreinoRemoteDataSourceImpl(get()) }
     single<TreinoRepository> { TreinoRepositoryImpl(get(), get(), get()) }
+    viewModel { TreinoViewModel(get()) }
 }
