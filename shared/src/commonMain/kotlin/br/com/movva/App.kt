@@ -27,6 +27,8 @@ import org.koin.compose.viewmodel.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.movva.feature.treino.di.treinoModule
 
+import br.com.movva.feature.treino.ui.NovoTreinoScreen
+
 @Composable
 @Preview
 fun App() {
@@ -58,7 +60,7 @@ fun AuthGate(
             onLoginSuccess = viewModel::onLoginSuccess,
             onCreateAccountClick = { }
         )
-        StartDestination.Home -> PerfilScreen(onLogout = viewModel::logout)
+        StartDestination.Home -> NovoTreinoScreen()
     }
 }
 

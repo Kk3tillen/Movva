@@ -83,7 +83,8 @@ class TreinoRepositoryImpl(
             localDataSource.marcarSincronizado(treino.id)
         } catch (e: CancellationException) {
             throw e
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            println("TREINO_SYNC_ERRO: ${e.message}")
         }
     }
 
