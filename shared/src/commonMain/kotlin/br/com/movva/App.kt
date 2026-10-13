@@ -61,7 +61,7 @@ fun AuthGate(
             onLoginSuccess = viewModel::onLoginSuccess,
             onCreateAccountClick = { }
         )
-        StartDestination.Home -> TreinosScreen()
+        StartDestination.Home -> NovoTreinoScreen()
     }
 }
 
