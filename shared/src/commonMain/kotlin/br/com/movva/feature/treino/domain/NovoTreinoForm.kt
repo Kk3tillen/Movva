@@ -31,7 +31,7 @@ private fun validarDuracao(texto: String): String? {
     return if (valor <= 0) "A duração deve ser maior que zero" else null
 }
 
-private fun validarData(texto: String): String? {
+fun validarData(texto: String): String? {
     val partes = texto.split("-")
     if (partes.size != 3) return "Use o formato AAAA-MM-DD"
 
