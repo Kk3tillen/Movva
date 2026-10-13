@@ -30,6 +30,7 @@ import br.com.movva.feature.dieta.di.dietaModule
 
 import br.com.movva.feature.treino.ui.NovoTreinoScreen
 import br.com.movva.feature.treino.ui.TreinosScreen
+import br.com.movva.feature.dieta.ui.NovaDietaScreen
 
 @Composable
 @Preview
@@ -62,7 +63,7 @@ fun AuthGate(
             onLoginSuccess = viewModel::onLoginSuccess,
             onCreateAccountClick = { }
         )
-        StartDestination.Home -> NovoTreinoScreen()
+        StartDestination.Home -> NovaDietaScreen()
     }
 }
 
