@@ -28,6 +28,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.movva.feature.treino.di.treinoModule
 
 import br.com.movva.feature.treino.ui.NovoTreinoScreen
+import br.com.movva.feature.treino.ui.TreinosScreen
 
 @Composable
 @Preview
@@ -60,7 +61,7 @@ fun AuthGate(
             onLoginSuccess = viewModel::onLoginSuccess,
             onCreateAccountClick = { }
         )
-        StartDestination.Home -> NovoTreinoScreen()
+        StartDestination.Home -> TreinosScreen()
     }
 }
 
