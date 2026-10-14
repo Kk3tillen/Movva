@@ -27,10 +27,10 @@ import org.koin.compose.viewmodel.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.movva.feature.treino.di.treinoModule
 import br.com.movva.feature.dieta.di.dietaModule
-
 import br.com.movva.feature.treino.ui.NovoTreinoScreen
 import br.com.movva.feature.treino.ui.TreinosScreen
 import br.com.movva.feature.dieta.ui.NovaDietaScreen
+import br.com.movva.feature.dieta.ui.DietasScreen
 
 @Composable
 @Preview
@@ -63,7 +63,7 @@ fun AuthGate(
             onLoginSuccess = viewModel::onLoginSuccess,
             onCreateAccountClick = { }
         )
-        StartDestination.Home -> NovaDietaScreen()
+        StartDestination.Home -> PerfilScreen(onLogout = viewModel::logout)
     }
 }
 
