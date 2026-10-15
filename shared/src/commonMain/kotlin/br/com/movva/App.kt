@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -19,18 +18,14 @@ import br.com.movva.core.di.providePlatformContext
 import br.com.movva.core.di.rememberPlatformContext
 import br.com.movva.core.network.supabaseModule
 import br.com.movva.core.theme.MovvaTheme
-import br.com.movva.feature.perfil.di.perfilModule
-import br.com.movva.feature.perfil.ui.PerfilScreen
+import br.com.movva.components.perfil.di.perfilModule
+import br.com.movva.core.navigation.MainScreen
 import br.com.movva.modules.authModule
 import org.koin.compose.KoinApplication
 import org.koin.compose.viewmodel.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import br.com.movva.feature.treino.di.treinoModule
-import br.com.movva.feature.dieta.di.dietaModule
-import br.com.movva.feature.treino.ui.NovoTreinoScreen
-import br.com.movva.feature.treino.ui.TreinosScreen
-import br.com.movva.feature.dieta.ui.NovaDietaScreen
-import br.com.movva.feature.dieta.ui.DietasScreen
+import br.com.movva.components.treino.di.treinoModule
+import br.com.movva.components.dieta.di.dietaModule
 
 @Composable
 @Preview
@@ -63,7 +58,7 @@ fun AuthGate(
             onLoginSuccess = viewModel::onLoginSuccess,
             onCreateAccountClick = { }
         )
-        StartDestination.Home -> PerfilScreen(onLogout = viewModel::logout)
+        StartDestination.Home -> MainScreen(onLogout = viewModel::logout)
     }
 }
 
