@@ -109,6 +109,7 @@ kotlin {
             implementation(libs.sqldelight.native.driver)
         }
         commonMain.dependencies {
+            implementation(libs.compose.material.icons)
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
@@ -126,6 +127,8 @@ kotlin {
             implementation(libs.supabase.storage)
 
             implementation(libs.ktor.client.core)
+            implementation(libs.coil.compose)
+            implementation(libs.coil.network.ktor)
             implementation(libs.kotlinx.serialization.json)
 
             implementation(libs.sqldelight.runtime)
