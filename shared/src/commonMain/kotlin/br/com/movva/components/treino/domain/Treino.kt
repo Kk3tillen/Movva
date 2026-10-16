@@ -7,4 +7,6 @@ data class Treino(
     val duracaoMin: Int?,
     val data: String,
     val observacoes: String?,
+    // data (AAAA-MM-DD) da última vez em que o treino foi feito; null se nunca foi
+    val ultimaExecucao: String? = null,
 )

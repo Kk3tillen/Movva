@@ -18,12 +18,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import br.com.movva.components.treino.domain.formatarData
 import br.com.movva.core.theme.MovvaTheme
+import br.com.movva.core.theme.VerdeConcluido
 import br.com.movva.components.treino.domain.Treino
 
 @Composable
 fun TreinoItem(
     treino: Treino,
+    hoje: String,
     modifier: Modifier = Modifier,
 ) {
     val colors = MaterialTheme.colorScheme
@@ -61,6 +64,22 @@ fun TreinoItem(
             fontSize = 13.sp,
         )
 
+        when (val ultima = treino.ultimaExecucao) {
+            null -> Unit
+            hoje -> {
+                Spacer(modifier = Modifier.height(8.dp))
+                Selo(texto = "✓ Feito hoje", cor = VerdeConcluido)
+            }
+            else -> {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Último: ${formatarData(ultima)}",
+                    color = colors.onSurfaceVariant,
+                    fontSize = 12.sp,
+                )
+            }
+        }
+
         treino.observacoes?.let {
             Spacer(modifier = Modifier.height(8.dp))
             Text(
@@ -72,12 +91,6 @@ fun TreinoItem(
             )
         }
     }
-}
-
-// "2026-10-09" -> "09/10/2026". Se o formato for outro, mostra como veio.
-private fun formatarData(data: String): String {
-    val partes = data.split("-")
-    return if (partes.size == 3) "${partes[2]}/${partes[1]}/${partes[0]}" else data
 }
 
 @Preview
@@ -92,7 +105,9 @@ private fun TreinoItemPreviewCompleto() {
                 duracaoMin = 50,
                 data = "2026-10-09",
                 observacoes = "Aumentei a carga no agachamento",
+                ultimaExecucao = "2026-10-16",
             ),
+            hoje = "2026-10-16",
             modifier = Modifier.padding(16.dp),
         )
     }
@@ -110,7 +125,9 @@ private fun TreinoItemPreviewSemOpcionais() {
                 duracaoMin = null,
                 data = "2026-10-08",
                 observacoes = null,
+                ultimaExecucao = "2026-10-12",
             ),
+            hoje = "2026-10-16",
             modifier = Modifier.padding(16.dp),
         )
     }

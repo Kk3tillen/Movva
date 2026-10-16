@@ -4,9 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.movva.components.treino.data.TreinoRepository
 import br.com.movva.components.treino.data.TreinosResultado
+import br.com.movva.components.treino.domain.ExercicioForm
 import br.com.movva.components.treino.domain.NovoTreinoErros
 import br.com.movva.components.treino.domain.NovoTreinoForm
 import br.com.movva.components.treino.domain.Treino
+import br.com.movva.components.treino.domain.toExercicio
 import br.com.movva.components.treino.domain.validarNovoTreino
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,6 +16,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 sealed interface TreinosUiState {
     data object Loading : TreinosUiState
@@ -42,10 +46,6 @@ class TreinoViewModel(
     private var listaJob: Job? = null
     private var tentouSalvar = false
 
-    init {
-        carregarTreinos()
-    }
-
     fun carregarTreinos() {
         listaJob?.cancel()
         listaJob = viewModelScope.launch {
@@ -61,8 +61,20 @@ class TreinoViewModel(
     fun onNomeChange(valor: String) = atualizarForm { it.copy(nome = valor) }
     fun onTipoChange(valor: String) = atualizarForm { it.copy(tipo = valor) }
     fun onDuracaoChange(valor: String) = atualizarForm { it.copy(duracao = valor) }
-    fun onDataChange(valor: String) = atualizarForm { it.copy(data = valor) }
     fun onObservacoesChange(valor: String) = atualizarForm { it.copy(observacoes = valor) }
+
+    @OptIn(ExperimentalUuidApi::class)
+    fun onAdicionarExercicio() = atualizarForm {
+        it.copy(exercicios = it.exercicios + ExercicioForm(id = Uuid.random().toString()))
+    }
+
+    fun onRemoverExercicio(id: String) = atualizarForm { form ->
+        form.copy(exercicios = form.exercicios.filterNot { it.id == id })
+    }
+
+    fun onExercicioChange(exercicio: ExercicioForm) = atualizarForm { form ->
+        form.copy(exercicios = form.exercicios.map { if (it.id == exercicio.id) exercicio else it })
+    }
 
     private fun atualizarForm(transformar: (NovoTreinoForm) -> NovoTreinoForm) {
         _formState.update { atual ->
@@ -92,8 +104,8 @@ class TreinoViewModel(
                 nome = form.nome.trim(),
                 tipo = form.tipo.trim(),
                 duracaoMin = form.duracao.trim().toIntOrNull(),
-                data = form.data.trim(),
                 observacoes = form.observacoes.trim().ifBlank { null },
+                exercicios = form.exercicios.map { it.toExercicio() },
             ).onSuccess {
                 tentouSalvar = false
                 _formState.value = NovoTreinoUiState(salvo = true)

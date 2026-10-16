@@ -1,0 +1,11 @@
+CREATE TABLE exercicioEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    treinoId TEXT NOT NULL,
+    userId TEXT NOT NULL,
+    ordem INTEGER NOT NULL,
+    nome TEXT NOT NULL,
+    series INTEGER NOT NULL,
+    reps INTEGER NOT NULL,
+    cargaKg REAL,
+    sincronizado INTEGER NOT NULL DEFAULT 0
+);

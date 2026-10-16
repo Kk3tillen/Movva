@@ -6,3 +6,5 @@ import java.util.Locale
 
 actual fun dataDeHojeIso(): String =
     SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())
+
+actual fun horaAtual(): Int = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY)

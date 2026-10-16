@@ -33,3 +33,5 @@ private fun diasNoMes(mes: Int, ano: Int): Int = when (mes) {
 }
 
 private fun ehBissexto(ano: Int) = (ano % 4 == 0 && ano % 100 != 0) || ano % 400 == 0
+
+expect fun horaAtual(): Int

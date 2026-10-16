@@ -10,6 +10,8 @@ import androidx.compose.ui.graphics.Color
 private val OrangeDark = Color(0xFFF5A623)
 private val OrangeLight = Color(0xFFE34200)
 
+val VerdeConcluido = Color(0xFF2E9E5B)
+
 private val MovvaDarkColors = darkColorScheme(
     primary = OrangeDark,
     onPrimary = Color.Black,
