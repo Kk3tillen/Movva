@@ -13,6 +13,6 @@ import org.koin.core.module.dsl.viewModel
 val treinoModule = module {
     single<TreinoLocalDataSource> { TreinoLocalDataSourceImpl(get()) }
     single<TreinoRemoteDataSource> { TreinoRemoteDataSourceImpl(get()) }
-    single<TreinoRepository> { TreinoRepositoryImpl(get(), get(), get()) }
+    single<TreinoRepository> { TreinoRepositoryImpl(get(), get(), get(), get()) }
     viewModel { TreinoViewModel(get()) }
 }

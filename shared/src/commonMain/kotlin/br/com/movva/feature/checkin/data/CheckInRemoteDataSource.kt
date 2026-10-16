@@ -9,6 +9,7 @@ import kotlinx.serialization.Serializable
 interface CheckInRemoteDataSource {
     suspend fun upsert(userId: String, checkIn: CheckIn)
     suspend fun getCheckInDoDia(userId: String, data: String): CheckIn?
+    suspend fun getRecentes(userId: String, desde: String): List<CheckIn>
 }
 
 class CheckInRemoteDataSourceImpl(
@@ -41,6 +42,23 @@ class CheckInRemoteDataSourceImpl(
             }
             .decodeSingleOrNull<CheckInDto>()
             ?.let {
+                CheckIn(
+                    data = it.data,
+                    treinoFeito = it.treinoFeito,
+                    dietaSeguida = it.dietaSeguida,
+                )
+            }
+
+    override suspend fun getRecentes(userId: String, desde: String): List<CheckIn> =
+        supabaseClient.from("check_ins")
+            .select {
+                filter {
+                    eq("usuario_id", userId)
+                    gte("data", desde)
+                }
+            }
+            .decodeList<CheckInDto>()
+            .map {
                 CheckIn(
                     data = it.data,
                     treinoFeito = it.treinoFeito,

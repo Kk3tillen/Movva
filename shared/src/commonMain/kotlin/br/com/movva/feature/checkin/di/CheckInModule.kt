@@ -14,5 +14,5 @@ val checkInModule = module {
     single<CheckInLocalDataSource> { CheckInLocalDataSourceImpl(get()) }
     single<CheckInRemoteDataSource> { CheckInRemoteDataSourceImpl(get()) }
     single<CheckInRepository> { CheckInRepositoryImpl(get(), get(), get()) }
-    viewModel { CheckInViewModel(get()) }
+    viewModel { CheckInViewModel(get(), get()) }
 }

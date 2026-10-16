@@ -2,6 +2,7 @@ package br.com.movva.components.treino.data
 
 import br.com.movva.auth.AuthRepository
 import br.com.movva.components.treino.domain.Treino
+import br.com.movva.feature.checkin.data.CheckInRepository
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -27,7 +28,8 @@ interface TreinoRepository {
 class TreinoRepositoryImpl(
     private val remoteDataSource: TreinoRemoteDataSource,
     private val localDataSource: TreinoLocalDataSource,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val checkInRepository: CheckInRepository
 ) : TreinoRepository {
 
     override fun getTreinos(): Flow<TreinosResultado> = flow {
@@ -85,6 +87,11 @@ class TreinoRepositoryImpl(
             throw e
         } catch (e: Exception) {
             println("TREINO_SYNC_ERRO: ${e.message}")
+        }
+
+        // 3) treino registrado conta automaticamente como check-in do dia
+        checkInRepository.marcarTreinoFeito(treino.data).onFailure { e ->
+            println("CHECKIN_AUTO_ERRO: ${e.message}")
         }
     }
 

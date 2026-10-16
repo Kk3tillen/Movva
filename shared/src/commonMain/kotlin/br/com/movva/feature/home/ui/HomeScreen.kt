@@ -15,8 +15,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import br.com.movva.feature.checkin.ui.CheckInCard
 import br.com.movva.feature.checkin.ui.CheckInViewModel
+import br.com.movva.feature.checkin.ui.StreakHeader
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -42,12 +42,7 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            CheckInCard(
-                state = state,
-                onTreinoFeitoChange = checkInViewModel::onTreinoFeitoChange,
-                onDietaSeguidaChange = checkInViewModel::onDietaSeguidaChange,
-                onRegistrar = checkInViewModel::registrarCheckIn,
-            )
+            StreakHeader(state = state)
         }
     }
 }

@@ -2,6 +2,7 @@ package br.com.movva.components.dieta.data
 
 import br.com.movva.auth.AuthRepository
 import br.com.movva.components.dieta.domain.Dieta
+import br.com.movva.feature.checkin.data.CheckInRepository
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -25,7 +26,8 @@ interface DietaRepository {
 class DietaRepositoryImpl(
     private val remoteDataSource: DietaRemoteDataSource,
     private val localDataSource: DietaLocalDataSource,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val checkInRepository: CheckInRepository
 ) : DietaRepository {
 
     override fun getDietas(): Flow<DietasResultado> = flow {
@@ -79,6 +81,11 @@ class DietaRepositoryImpl(
             throw e
         } catch (e: Exception) {
             println("DIETA_SYNC_ERRO: ${e.message}")
+        }
+
+        // 3) refeição registrada conta automaticamente como check-in do dia
+        checkInRepository.marcarDietaSeguida(dieta.data).onFailure { e ->
+            println("CHECKIN_AUTO_ERRO: ${e.message}")
         }
     }
 

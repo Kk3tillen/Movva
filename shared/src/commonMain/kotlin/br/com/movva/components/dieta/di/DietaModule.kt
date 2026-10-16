@@ -13,6 +13,6 @@ import org.koin.dsl.module
 val dietaModule = module {
     single<DietaLocalDataSource> { DietaLocalDataSourceImpl(get()) }
     single<DietaRemoteDataSource> { DietaRemoteDataSourceImpl(get()) }
-    single<DietaRepository> { DietaRepositoryImpl(get(), get(), get()) }
+    single<DietaRepository> { DietaRepositoryImpl(get(), get(), get(), get()) }
     viewModel { DietaViewModel(get()) }
 }

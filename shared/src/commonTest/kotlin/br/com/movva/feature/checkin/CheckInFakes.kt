@@ -61,4 +61,11 @@ class FakeCheckInRemoteDataSource(
         if (falharAoLer) throw RuntimeException("sem conexão")
         return remoto[userId to data]
     }
+
+    override suspend fun getRecentes(userId: String, desde: String): List<CheckIn> {
+        if (falharAoLer) throw RuntimeException("sem conexão")
+        return remoto.entries
+            .filter { (chave, checkIn) -> chave.first == userId && checkIn.data >= desde }
+            .map { it.value }
+    }
 }
