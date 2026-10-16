@@ -1,0 +1,22 @@
+-- Uma linha por refeição por dia em que foi marcada. Desmarcar grava feita = 0 (para sincronizar a mudança).
+CREATE TABLE refeicaoFeitaEntity (
+    dietaId TEXT NOT NULL,
+    userId TEXT NOT NULL,
+    dataFeita TEXT NOT NULL,
+    feita INTEGER NOT NULL DEFAULT 1,
+    sincronizado INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (dietaId, dataFeita)
+);
+
+selectUltimasFeitas:
+SELECT dietaId, MAX(dataFeita) AS ultima FROM refeicaoFeitaEntity WHERE userId = ? AND feita = 1 GROUP BY dietaId;
+
+selectNaoSincronizadas:
+SELECT * FROM refeicaoFeitaEntity WHERE userId = ? AND sincronizado = 0;
+
+upsertFeita:
+INSERT OR REPLACE INTO refeicaoFeitaEntity (dietaId, userId, dataFeita, feita, sincronizado)
+VALUES (?, ?, ?, ?, ?);
+
+marcarSincronizada:
+UPDATE refeicaoFeitaEntity SET sincronizado = 1 WHERE dietaId = ? AND dataFeita = ?;

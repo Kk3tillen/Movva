@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,30 +22,50 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.movva.core.theme.MovvaTheme
+import br.com.movva.core.ui.BotaoPrincipal
+import br.com.movva.core.util.dataDeHojeIso
 import br.com.movva.components.treino.domain.Treino
 import org.koin.compose.viewmodel.koinViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.clickable
+import androidx.compose.ui.draw.clip
 
 @Composable
 fun TreinosScreen(
+    onTreinoClick: (Treino) -> Unit = {},
+    onNovoTreinoClick: () -> Unit = {},
     viewModel: TreinoViewModel = koinViewModel(),
 ) {
     val state by viewModel.treinosState.collectAsStateWithLifecycle()
-    TreinosContent(state = state)
+
+    // recarrega sempre que a lista volta a aparecer (ex: depois de finalizar um treino no detalhe)
+    LaunchedEffect(Unit) { viewModel.carregarTreinos() }
+
+    TreinosContent(state = state, onTreinoClick = onTreinoClick, onNovoTreinoClick = onNovoTreinoClick)
 }
 
 @Composable
 fun TreinosContent(
     state: TreinosUiState,
     modifier: Modifier = Modifier,
+    onTreinoClick: (Treino) -> Unit = {},
+    onNovoTreinoClick: () -> Unit = {},
+    hoje: String = dataDeHojeIso(),
 ) {
     val colors = MaterialTheme.colorScheme
 
     Scaffold(
         modifier = modifier,
         containerColor = colors.background,
+        bottomBar = {
+            BotaoPrincipal(
+                texto = "Adicionar treino",
+                onClick = onNovoTreinoClick,
+                modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp),
+            )
+        },
     ) { padding ->
         Column(
             modifier = Modifier
@@ -96,7 +117,13 @@ fun TreinosContent(
                                 verticalArrangement = Arrangement.spacedBy(12.dp),
                             ) {
                                 items(state.treinos, key = { it.id }) { treino ->
-                                    TreinoItem(treino = treino)
+                                    TreinoItem(
+                                        treino = treino,
+                                        hoje = hoje,
+                                        modifier = Modifier
+                                            .clip(RoundedCornerShape(12.dp))
+                                            .clickable { onTreinoClick(treino) },
+                                    )
                                 }
                             }
                         }
@@ -130,6 +157,7 @@ private fun TreinosPreviewComItens() {
                         duracaoMin = 50,
                         data = "2026-10-09",
                         observacoes = "Aumentei a carga no agachamento",
+                        ultimaExecucao = "2026-10-16",
                     ),
                     Treino(
                         id = "2",
@@ -138,9 +166,11 @@ private fun TreinosPreviewComItens() {
                         duracaoMin = null,
                         data = "2026-10-08",
                         observacoes = null,
+                        ultimaExecucao = "2026-10-12",
                     ),
                 ),
             ),
+            hoje = "2026-10-16",
         )
     }
 }

@@ -14,3 +14,12 @@ actual fun dataDeHojeIso(): String {
     }
     return formatter.stringFromDate(NSDate())
 }
+
+actual fun horaAtual(): Int {
+    val formatter = NSDateFormatter().apply {
+        dateFormat = "H"
+        locale = NSLocale(localeIdentifier = "en_US_POSIX")
+        timeZone = NSTimeZone.localTimeZone
+    }
+    return formatter.stringFromDate(NSDate()).toInt()
+}
