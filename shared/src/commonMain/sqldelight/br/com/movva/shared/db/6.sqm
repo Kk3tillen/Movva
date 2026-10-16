@@ -1,0 +1,8 @@
+CREATE TABLE refeicaoFeitaEntity (
+    dietaId TEXT NOT NULL,
+    userId TEXT NOT NULL,
+    dataFeita TEXT NOT NULL,
+    feita INTEGER NOT NULL DEFAULT 1,
+    sincronizado INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (dietaId, dataFeita)
+);

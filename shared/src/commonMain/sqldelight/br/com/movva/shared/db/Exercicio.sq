@@ -1,0 +1,24 @@
+CREATE TABLE exercicioEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    treinoId TEXT NOT NULL,
+    userId TEXT NOT NULL,
+    ordem INTEGER NOT NULL,
+    nome TEXT NOT NULL,
+    series INTEGER NOT NULL,
+    reps INTEGER NOT NULL,
+    cargaKg REAL,
+    sincronizado INTEGER NOT NULL DEFAULT 0
+);
+
+selectExerciciosDoTreino:
+SELECT * FROM exercicioEntity WHERE treinoId = ? ORDER BY ordem;
+
+selectNaoSincronizados:
+SELECT * FROM exercicioEntity WHERE userId = ? AND sincronizado = 0;
+
+upsertExercicio:
+INSERT OR REPLACE INTO exercicioEntity (id, treinoId, userId, ordem, nome, series, reps, cargaKg, sincronizado)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+marcarSincronizado:
+UPDATE exercicioEntity SET sincronizado = 1 WHERE id = ?;

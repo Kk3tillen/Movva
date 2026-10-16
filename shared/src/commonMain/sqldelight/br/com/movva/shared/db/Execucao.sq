@@ -1,0 +1,28 @@
+-- Uma execução por treino por dia: refazer no mesmo dia atualiza a linha, em outro dia cria outra.
+CREATE TABLE execucaoTreinoEntity (
+    treinoId TEXT NOT NULL,
+    userId TEXT NOT NULL,
+    dataExecucao TEXT NOT NULL,
+    seriesJson TEXT NOT NULL,
+    sincronizado INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (treinoId, dataExecucao)
+);
+
+selectExecucao:
+SELECT * FROM execucaoTreinoEntity WHERE treinoId = ? AND dataExecucao = ?;
+
+selectUltimaExecucao:
+SELECT MAX(dataExecucao) AS ultima FROM execucaoTreinoEntity WHERE treinoId = ?;
+
+selectUltimasExecucoes:
+SELECT treinoId, MAX(dataExecucao) AS ultima FROM execucaoTreinoEntity WHERE userId = ? GROUP BY treinoId;
+
+selectNaoSincronizadas:
+SELECT * FROM execucaoTreinoEntity WHERE userId = ? AND sincronizado = 0;
+
+upsertExecucao:
+INSERT OR REPLACE INTO execucaoTreinoEntity (treinoId, userId, dataExecucao, seriesJson, sincronizado)
+VALUES (?, ?, ?, ?, ?);
+
+marcarSincronizada:
+UPDATE execucaoTreinoEntity SET sincronizado = 1 WHERE treinoId = ? AND dataExecucao = ?;

@@ -1,0 +1,21 @@
+CREATE TABLE checkInEntity (
+    userId TEXT NOT NULL,
+    dataCheckIn TEXT NOT NULL,
+    treinoFeito INTEGER NOT NULL DEFAULT 0,
+    dietaSeguida INTEGER NOT NULL DEFAULT 0,
+    sincronizado INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (userId, dataCheckIn)
+);
+
+selectCheckInDoDia:
+SELECT * FROM checkInEntity WHERE userId = ? AND dataCheckIn = ?;
+
+selectNaoSincronizados:
+SELECT * FROM checkInEntity WHERE userId = ? AND sincronizado = 0;
+
+upsertCheckIn:
+INSERT OR REPLACE INTO checkInEntity (userId, dataCheckIn, treinoFeito, dietaSeguida, sincronizado)
+VALUES (?, ?, ?, ?, ?);
+
+marcarSincronizado:
+UPDATE checkInEntity SET sincronizado = 1 WHERE userId = ? AND dataCheckIn = ?;

@@ -21,3 +21,6 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?);
 
 marcarSincronizado:
 UPDATE treinoEntity SET sincronizado = 1 WHERE id = ?;
+
+selectTreinoPorId:
+SELECT * FROM treinoEntity WHERE userId = ? AND id = ?;

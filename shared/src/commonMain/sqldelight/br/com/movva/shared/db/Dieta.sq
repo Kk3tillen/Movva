@@ -4,7 +4,8 @@ CREATE TABLE dietaEntity (
     tipoRefeicao TEXT NOT NULL,
     descricao TEXT NOT NULL,
     dataRefeicao TEXT NOT NULL,
-    sincronizado INTEGER NOT NULL DEFAULT 0
+    sincronizado INTEGER NOT NULL DEFAULT 0,
+    itensJson TEXT NOT NULL DEFAULT '[]'
 );
 
 selectDietas:
@@ -14,8 +15,14 @@ selectNaoSincronizados:
 SELECT * FROM dietaEntity WHERE userId = ? AND sincronizado = 0;
 
 upsertDieta:
-INSERT OR REPLACE INTO dietaEntity (id, userId, tipoRefeicao, descricao, dataRefeicao, sincronizado)
-VALUES (?, ?, ?, ?, ?, ?);
+INSERT OR REPLACE INTO dietaEntity (id, userId, tipoRefeicao, descricao, dataRefeicao, sincronizado, itensJson)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+selectDietaPorId:
+SELECT * FROM dietaEntity WHERE userId = ? AND id = ?;
+
+selectDietasDoDia:
+SELECT * FROM dietaEntity WHERE userId = ? AND dataRefeicao = ?;
 
 marcarSincronizado:
 UPDATE dietaEntity SET sincronizado = 1 WHERE id = ?;

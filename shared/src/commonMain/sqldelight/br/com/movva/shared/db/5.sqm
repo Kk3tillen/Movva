@@ -1,0 +1,1 @@
+ALTER TABLE dietaEntity ADD COLUMN itensJson TEXT NOT NULL DEFAULT '[]';
