@@ -27,6 +27,7 @@
 |                                                     | Painel web, relatórios e gráficos avançados                                    |
 
 **Hipótese de valor:** acreditamos que pessoas que treinam e fazem dieta vão manter o check-in diário no Movva porque a streak visual (fogueirinha) cria um incentivo simples e imediato pra não quebrar a sequência.
+
 **Observação técnica:** o app assume conexão com internet para funcionar (cadastro, check-in). Funcionamento offline fica fora do escopo do MVP.
 
 ## Backlog Inicial
