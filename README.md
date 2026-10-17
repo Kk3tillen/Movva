@@ -22,7 +22,7 @@ A proposta completa está em [`docs/sprint-0/proposta.md`](docs/sprint-0/propost
 | Perfil com nome e ID (`user_tag`) copiável | ✅ |
 | Cadastro e listagem de treinos | ✅ |
 | Cadastro e listagem de refeições (dieta) | ✅ |
-| Navegação entre telas, tema claro/escuro e responsividade | 🚧 Em andamento |
+| Navegação entre telas, tema claro/escuro e responsividade | ✅ |
 | Streak (contador de dias seguidos) | 🔜 Sprint 2 |
 | Histórico e calendário de frequência | 🔜 Sprint 2 |
 | Tela Home (resumo do dia) | 🔜 Sprint 2 |
