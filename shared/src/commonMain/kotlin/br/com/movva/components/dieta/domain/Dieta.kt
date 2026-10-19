@@ -11,3 +11,7 @@ data class Dieta(
 ) {
     val totais: TotaisRefeicao get() = itens.totais()
 }
+
+// Soma os totais só das refeições já marcadas como feitas hoje (usado na Dieta e no resumo da Home).
+fun List<Dieta>.resumoDeHoje(): TotaisRefeicao =
+    filter { it.feitaHoje }.fold(TotaisRefeicao()) { acc, dieta -> acc + dieta.totais }

@@ -71,6 +71,7 @@ import br.com.movva.components.treino.domain.formatarData
 import br.com.movva.core.theme.MovvaTheme
 import br.com.movva.core.theme.VerdeConcluido
 import br.com.movva.core.ui.BotaoTracejado
+import br.com.movva.core.ui.Selo
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
@@ -533,19 +534,6 @@ private fun IndicadorCircular(
             )
         }
     }
-}
-
-@Composable
-internal fun Selo(texto: String, cor: Color) {
-    Text(
-        text = texto,
-        color = cor,
-        fontSize = 12.sp,
-        fontWeight = FontWeight.SemiBold,
-        modifier = Modifier
-            .background(cor.copy(alpha = 0.14f), RoundedCornerShape(50))
-            .padding(horizontal = 10.dp, vertical = 4.dp),
-    )
 }
 
 @Composable
