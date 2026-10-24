@@ -38,8 +38,8 @@ import br.com.movva.components.dieta.domain.Dieta
 @Composable
 fun DietaItem(
     dieta: Dieta,
-    hoje: String,
-    onMarcarFeita: () -> Unit,
+    selecionada: Boolean,
+    onAlternarSelecao: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = MaterialTheme.colorScheme
@@ -78,40 +78,30 @@ fun DietaItem(
                     fontWeight = FontWeight.SemiBold,
                 )
             }
-
-            val ultima = dieta.ultimaVezFeita
-            if (!dieta.feitaHoje && ultima != null && ultima != hoje) {
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "Última vez: ${formatarData(ultima)}",
-                    color = colors.onSurfaceVariant,
-                    fontSize = 12.sp,
-                )
-            }
         }
 
-        IconButton(onClick = onMarcarFeita) {
+        IconButton(onClick = onAlternarSelecao) {
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .size(32.dp)
                     .clip(CircleShape)
                     .then(
-                        if (dieta.feitaHoje) {
+                        if (selecionada) {
                             Modifier.background(VerdeConcluido)
                         } else {
                             Modifier.border(2.dp, colors.onSurfaceVariant.copy(alpha = 0.5f), CircleShape)
                         }
                     )
                     .semantics {
-                        contentDescription = if (dieta.feitaHoje) {
-                            "Desmarcar ${dieta.tipoRefeicao} como feita hoje"
+                        contentDescription = if (selecionada) {
+                            "Desmarcar ${dieta.tipoRefeicao}"
                         } else {
-                            "Marcar ${dieta.tipoRefeicao} como feita hoje"
+                            "Selecionar ${dieta.tipoRefeicao}"
                         }
                     },
             ) {
-                if (dieta.feitaHoje) {
+                if (selecionada) {
                     Icon(Icons.Filled.Check, contentDescription = null, tint = Color.White, modifier = Modifier.size(20.dp))
                 }
             }
@@ -135,11 +125,9 @@ private fun DietaItemPreview() {
                 tipoRefeicao = "Almoço",
                 descricao = "Arroz, feijão, frango grelhado e salada",
                 data = "2026-10-09",
-                feitaHoje = true,
-                ultimaVezFeita = "2026-10-16",
             ),
-            hoje = "2026-10-16",
-            onMarcarFeita = {},
+            selecionada = true,
+            onAlternarSelecao = {},
             modifier = Modifier.padding(16.dp),
         )
     }
@@ -155,10 +143,9 @@ private fun DietaItemPreviewDescricaoLonga() {
                 tipoRefeicao = "Jantar",
                 descricao = "Omelete com três ovos, queijo, tomate e orégano, acompanhado de uma fatia de pão integral e uma porção de salada verde com azeite e limão",
                 data = "2026-10-08",
-                ultimaVezFeita = "2026-10-12",
             ),
-            hoje = "2026-10-16",
-            onMarcarFeita = {},
+            selecionada = false,
+            onAlternarSelecao = {},
             modifier = Modifier.padding(16.dp),
         )
     }

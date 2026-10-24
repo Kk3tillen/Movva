@@ -11,7 +11,6 @@ import kotlinx.serialization.Serializable
 interface DietaRemoteDataSource {
     suspend fun upsert(userId: String, dieta: Dieta)
     suspend fun getDietas(userId: String): List<Dieta>
-    suspend fun upsertFeita(userId: String, marcacao: RefeicaoFeita)
 }
 
 class DietaRemoteDataSourceImpl(
@@ -48,28 +47,7 @@ class DietaRemoteDataSourceImpl(
                     itens = it.itens
                 )
             }
-
-    override suspend fun upsertFeita(userId: String, marcacao: RefeicaoFeita) {
-        supabaseClient.from("dieta_refeicoes_feitas").upsert(
-            RefeicaoFeitaDto(
-                dietaId = marcacao.dietaId,
-                usuarioId = userId,
-                data = marcacao.data,
-                feita = marcacao.feita
-            )
-        ) {
-            onConflict = "dieta_id,data"
-        }
-    }
 }
-
-@Serializable
-private data class RefeicaoFeitaDto(
-    @SerialName("dieta_id") val dietaId: String,
-    @SerialName("usuario_id") val usuarioId: String,
-    val data: String,
-    val feita: Boolean,
-)
 
 @Serializable
 private data class DietaDto(
