@@ -20,10 +20,12 @@ data class NovoTreinoErros(
     val nome: String? = null,
     val tipo: String? = null,
     val duracao: String? = null,
+    val exerciciosVazios: String? = null,
     val exercicios: List<ExercicioErros> = emptyList(),
 ) {
     val temErro: Boolean
         get() = nome != null || tipo != null || duracao != null ||
+            exerciciosVazios != null ||
             exercicios.any { it.temErro }
 }
 
@@ -41,6 +43,7 @@ fun validarNovoTreino(form: NovoTreinoForm): NovoTreinoErros = NovoTreinoErros(
     nome = if (form.nome.isBlank()) "Informe o nome do treino" else null,
     tipo = if (form.tipo.isBlank()) "Informe o tipo do treino" else null,
     duracao = validarDuracao(form.duracao),
+    exerciciosVazios = if (form.exercicios.isEmpty()) "Adicione pelo menos um exercício" else null,
     exercicios = form.exercicios.map(::validarExercicio),
 )
 

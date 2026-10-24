@@ -187,7 +187,7 @@ fun NovoTreinoContent(
 
         Button(
             onClick = onSalvar,
-            enabled = !state.salvando,
+            enabled = !state.salvando && state.form.exercicios.isNotEmpty(),
             shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(containerColor = colors.primary),
             modifier = Modifier
@@ -203,7 +203,6 @@ fun NovoTreinoContent(
             } else {
                 Text(
                     "Salvar treino",
-                    color = colors.onPrimary,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 16.sp,
                 )
