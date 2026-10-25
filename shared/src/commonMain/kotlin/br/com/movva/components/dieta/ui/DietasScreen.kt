@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -106,10 +107,17 @@ fun DietasContent(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 if (temSelecionadas) {
+                    val textoBotao = if (dados.finalizando) {
+                        "Finalizando..."
+                    } else if (dados.dietaSeguidaHoje) {
+                        "Atualizar dieta de hoje 🔥"
+                    } else {
+                        "Finalizar dieta de hoje 🔥"
+                    }
                     BotaoPrincipal(
-                        texto = if (dados?.finalizando == true) "Finalizando..." else "Finalizar dieta de hoje 🔥",
+                        texto = textoBotao,
                         onClick = onFinalizarDieta,
-                        habilitado = !(dados?.finalizando ?: false),
+                        habilitado = !dados.finalizando,
                     )
                 }
                 BotaoPrincipal(
@@ -143,7 +151,7 @@ fun DietasContent(
                     val totalHoje = d.dietas
                         .filter { it.id in d.selecionadas || d.dietaSeguidaHoje }
                         .fold(TotaisRefeicao()) { acc, dieta -> acc + dieta.totais }
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(6.dp))
                     Text(
                         text = "Total selecionado: ${totalHoje.kcal.roundToInt()} kcal · " +
                             "P ${totalHoje.proteinaG.roundToInt()}g · " +
@@ -185,9 +193,10 @@ fun DietasContent(
                                 contentPadding = PaddingValues(vertical = 16.dp),
                             ) {
                                 items(state.dietas, key = { it.id }) { dieta ->
+                                    val isConcluida = dieta.feitaHoje || (state.dietaSeguidaHoje && state.dietas.none { it.feitaHoje })
                                     val isSelecionada = dieta.id in state.selecionadas
                                     DietaItem(
-                                        dieta = dieta,
+                                        dieta = if (isConcluida != dieta.feitaHoje) dieta.copy(feitaHoje = isConcluida) else dieta,
                                         selecionada = isSelecionada,
                                         onAlternarSelecao = { onAlternarSelecao(dieta.id) },
                                         modifier = Modifier

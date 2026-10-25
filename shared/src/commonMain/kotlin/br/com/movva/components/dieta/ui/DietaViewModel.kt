@@ -86,6 +86,9 @@ class DietaViewModel(
 
         viewModelScope.launch {
             val hoje = dataDeHojeIso()
+            for (dietaId in estado.selecionadas) {
+                dietaRepository.marcarFeitaHoje(dietaId, true)
+            }
             checkInRepository.marcarDietaSeguida(hoje)
                 .onSuccess {
                     _dietasState.update {
@@ -97,6 +100,7 @@ class DietaViewModel(
                             )
                         } else it
                     }
+                    carregarDietas()
                     _mensagens.emit("🔥 Check-in de dieta concluído! Streak mantido.")
                 }
                 .onFailure { e ->

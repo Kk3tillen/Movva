@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -52,12 +53,26 @@ fun DietaItem(
             .padding(start = 16.dp, top = 16.dp, bottom = 16.dp, end = 4.dp),
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = dieta.tipoRefeicao,
-                color = colors.onBackground,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold,
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = dieta.tipoRefeicao,
+                    color = colors.onBackground,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                if (dieta.feitaHoje) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "✓ Concluída",
+                        color = VerdeConcluido,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier
+                            .background(VerdeConcluido.copy(alpha = 0.14f), RoundedCornerShape(50))
+                            .padding(horizontal = 8.dp, vertical = 2.dp),
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -80,6 +95,7 @@ fun DietaItem(
             }
         }
 
+        val marcada = selecionada || dieta.feitaHoje
         IconButton(onClick = onAlternarSelecao) {
             Box(
                 contentAlignment = Alignment.Center,
@@ -87,21 +103,21 @@ fun DietaItem(
                     .size(32.dp)
                     .clip(CircleShape)
                     .then(
-                        if (selecionada) {
+                        if (marcada) {
                             Modifier.background(VerdeConcluido)
                         } else {
                             Modifier.border(2.dp, colors.onSurfaceVariant.copy(alpha = 0.5f), CircleShape)
                         }
                     )
                     .semantics {
-                        contentDescription = if (selecionada) {
+                        contentDescription = if (marcada) {
                             "Desmarcar ${dieta.tipoRefeicao}"
                         } else {
                             "Selecionar ${dieta.tipoRefeicao}"
                         }
                     },
             ) {
-                if (selecionada) {
+                if (marcada) {
                     Icon(Icons.Filled.Check, contentDescription = null, tint = Color.White, modifier = Modifier.size(20.dp))
                 }
             }
