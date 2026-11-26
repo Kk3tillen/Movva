@@ -71,6 +71,17 @@ fun DietaItem(
                             .background(VerdeConcluido.copy(alpha = 0.14f), RoundedCornerShape(50))
                             .padding(horizontal = 8.dp, vertical = 2.dp),
                     )
+                } else if (dieta.ultimaVezFeita != null) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "✓ Concluído",
+                        color = VerdeConcluido,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier
+                            .background(VerdeConcluido.copy(alpha = 0.14f), RoundedCornerShape(50))
+                            .padding(horizontal = 8.dp, vertical = 2.dp),
+                    )
                 }
             }
 

@@ -18,10 +18,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import br.com.movva.components.treino.domain.Treino
 import br.com.movva.components.treino.domain.formatarData
 import br.com.movva.core.theme.MovvaTheme
 import br.com.movva.core.theme.VerdeConcluido
-import br.com.movva.components.treino.domain.Treino
 
 @Composable
 fun TreinoItem(
@@ -72,6 +72,8 @@ fun TreinoItem(
             }
             else -> {
                 Spacer(modifier = Modifier.height(8.dp))
+                Selo(texto = "✓ Concluído", cor = VerdeConcluido)
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "Último: ${formatarData(ultima)}",
                     color = colors.onSurfaceVariant,
