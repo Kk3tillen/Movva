@@ -10,6 +10,7 @@ interface CheckInRemoteDataSource {
     suspend fun upsert(userId: String, checkIn: CheckIn)
     suspend fun getCheckInDoDia(userId: String, data: String): CheckIn?
     suspend fun getRecentes(userId: String, desde: String): List<CheckIn>
+    suspend fun getPorIntervalo(userId: String, inicio: String, fim: String): List<CheckIn>
 }
 
 class CheckInRemoteDataSourceImpl(
@@ -54,17 +55,25 @@ class CheckInRemoteDataSourceImpl(
             .select {
                 filter {
                     eq("usuario_id", userId)
+                    exact("grupo_id", null)
                     gte("data", desde)
                 }
             }
             .decodeList<CheckInDto>()
-            .map {
-                CheckIn(
-                    data = it.data,
-                    treinoFeito = it.treinoFeito,
-                    dietaSeguida = it.dietaSeguida,
-                )
+            .map { it.toDomain() }
+
+    override suspend fun getPorIntervalo(userId: String, inicio: String, fim: String): List<CheckIn> =
+        supabaseClient.from("check_ins")
+            .select {
+                filter {
+                    eq("usuario_id", userId)
+                    exact("grupo_id", null)
+                    gte("data", inicio)
+                    lte("data", fim)
+                }
             }
+            .decodeList<CheckInDto>()
+            .map { it.toDomain() }
 }
 
 @Serializable
@@ -81,4 +90,10 @@ private data class CheckInDto(
     val data: String,
     @SerialName("treino_feito") val treinoFeito: Boolean,
     @SerialName("dieta_seguida") val dietaSeguida: Boolean,
-)
+) {
+    fun toDomain() = CheckIn(
+        data = data,
+        treinoFeito = treinoFeito,
+        dietaSeguida = dietaSeguida,
+    )
+}

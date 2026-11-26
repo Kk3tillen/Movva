@@ -10,6 +10,9 @@ CREATE TABLE checkInEntity (
 selectCheckInDoDia:
 SELECT * FROM checkInEntity WHERE userId = ? AND dataCheckIn = ?;
 
+selectCheckInsNoIntervalo:
+SELECT * FROM checkInEntity WHERE userId = ? AND dataCheckIn >= ? AND dataCheckIn <= ? ORDER BY dataCheckIn ASC;
+
 selectNaoSincronizados:
 SELECT * FROM checkInEntity WHERE userId = ? AND sincronizado = 0;
 

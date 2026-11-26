@@ -8,6 +8,7 @@ import kotlinx.coroutines.withContext
 
 interface CheckInLocalDataSource {
     suspend fun getCheckInDoDia(userId: String, data: String): CheckIn?
+    suspend fun getCheckInsNoIntervalo(userId: String, inicio: String, fim: String): List<CheckIn>
     suspend fun getNaoSincronizados(userId: String): List<CheckIn>
     suspend fun salvar(userId: String, checkIn: CheckIn, sincronizado: Boolean)
     suspend fun marcarSincronizado(userId: String, data: String)
@@ -20,6 +21,14 @@ class CheckInLocalDataSourceImpl(
     override suspend fun getCheckInDoDia(userId: String, data: String): CheckIn? =
         withContext(Dispatchers.Default) {
             database.checkInQueries.selectCheckInDoDia(userId, data).executeAsOneOrNull()?.toDomain()
+        }
+
+    override suspend fun getCheckInsNoIntervalo(userId: String, inicio: String, fim: String): List<CheckIn> =
+        withContext(Dispatchers.Default) {
+            database.checkInQueries
+                .selectCheckInsNoIntervalo(userId, inicio, fim)
+                .executeAsList()
+                .map { it.toDomain() }
         }
 
     override suspend fun getNaoSincronizados(userId: String): List<CheckIn> =

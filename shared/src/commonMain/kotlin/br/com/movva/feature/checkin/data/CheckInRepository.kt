@@ -3,17 +3,25 @@ package br.com.movva.feature.checkin.data
 import br.com.movva.auth.AuthRepository
 import br.com.movva.core.util.dataDeHojeIso
 import br.com.movva.core.util.diaAnteriorIso
+import br.com.movva.core.util.diasNoMes
 import br.com.movva.feature.checkin.domain.CheckIn
 import kotlinx.coroutines.CancellationException
 
 // janela de dias usada tanto para sincronizar histórico recente quanto para limitar o cálculo da streak
 private const val JANELA_STREAK_DIAS = 400
 
+data class CheckInsMesResultado(
+    val checkIns: List<CheckIn>,
+    val cacheDesatualizado: Boolean = false,
+    val erroRede: String? = null,
+)
+
 interface CheckInRepository {
     suspend fun getCheckInDeHoje(): CheckIn?
     suspend fun marcarTreinoFeito(data: String): Result<Unit>
     suspend fun marcarDietaSeguida(data: String): Result<Unit>
     suspend fun getStreakAtual(): Int
+    suspend fun getCheckInsDoMes(ano: Int, mes: Int): CheckInsMesResultado
 }
 
 class CheckInRepositoryImpl(
@@ -67,17 +75,56 @@ class CheckInRepositoryImpl(
         return dias
     }
 
-    private suspend fun sincronizarRecentes(userId: String) {
-        try {
+    private suspend fun sincronizarRecentes(userId: String): Boolean {
+        return try {
             enviarPendentes(userId)
             val desde = dataMaisAntigaDaJanela()
             remoteDataSource.getRecentes(userId, desde).forEach { checkIn ->
                 localDataSource.salvar(userId, checkIn, sincronizado = true)
             }
+            true
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
             println("CHECKIN_SYNC_ERRO: ${e.message}")
+            false
+        }
+    }
+
+    override suspend fun getCheckInsDoMes(ano: Int, mes: Int): CheckInsMesResultado {
+        val userId = authRepository.currentUser()?.id ?: return CheckInsMesResultado(emptyList())
+        val prefixo = "${ano.toString().padStart(4, '0')}-${mes.toString().padStart(2, '0')}"
+        val inicio = "$prefixo-01"
+        val fim = "$prefixo-${diasNoMes(mes, ano).toString().padStart(2, '0')}"
+
+        val dentroDaJanela = fim >= dataMaisAntigaDaJanela()
+        if (dentroDaJanela) {
+            val sincronizou = sincronizarRecentes(userId)
+            val locais = localDataSource.getCheckInsNoIntervalo(userId, inicio, fim)
+            return CheckInsMesResultado(
+                checkIns = locais,
+                cacheDesatualizado = !sincronizou,
+                erroRede = if (!sincronizou) "Não foi possível atualizar do servidor. Exibindo dados em cache." else null,
+            )
+        }
+
+        return try {
+            val remotos = remoteDataSource.getPorIntervalo(userId, inicio, fim)
+            remotos.forEach { checkIn ->
+                localDataSource.salvar(userId, checkIn, sincronizado = true)
+            }
+            val locais = localDataSource.getCheckInsNoIntervalo(userId, inicio, fim)
+            CheckInsMesResultado(checkIns = locais)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            println("CHECKIN_MES_ERRO: ${e.message}")
+            val locais = localDataSource.getCheckInsNoIntervalo(userId, inicio, fim)
+            CheckInsMesResultado(
+                checkIns = locais,
+                cacheDesatualizado = true,
+                erroRede = "Não foi possível carregar este mês do servidor.",
+            )
         }
     }
 

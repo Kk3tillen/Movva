@@ -26,12 +26,12 @@ fun diaAnteriorIso(dataIso: String): String {
     return "${ano.toString().padStart(4, '0')}-${mes.toString().padStart(2, '0')}-${dia.toString().padStart(2, '0')}"
 }
 
-private fun diasNoMes(mes: Int, ano: Int): Int = when (mes) {
+fun diasNoMes(mes: Int, ano: Int): Int = when (mes) {
     2 -> if (ehBissexto(ano)) 29 else 28
     4, 6, 9, 11 -> 30
     else -> 31
 }
 
-private fun ehBissexto(ano: Int) = (ano % 4 == 0 && ano % 100 != 0) || ano % 400 == 0
+fun ehBissexto(ano: Int) = (ano % 4 == 0 && ano % 100 != 0) || ano % 400 == 0
 
 expect fun horaAtual(): Int
