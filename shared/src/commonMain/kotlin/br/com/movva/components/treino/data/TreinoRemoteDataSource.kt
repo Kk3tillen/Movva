@@ -14,6 +14,7 @@ interface TreinoRemoteDataSource {
     suspend fun upsertExercicios(userId: String, exercicios: List<ExercicioDoTreino>)
     suspend fun getExercicios(treinoId: String): List<Exercicio>
     suspend fun upsertExecucao(userId: String, execucao: ExecucaoTreino)
+    suspend fun getExecucoes(userId: String): List<ExecucaoTreino>
 }
 
 class TreinoRemoteDataSourceImpl(
@@ -100,6 +101,21 @@ class TreinoRemoteDataSourceImpl(
             onConflict = "treino_id,data"
         }
     }
+
+    override suspend fun getExecucoes(userId: String): List<ExecucaoTreino> =
+        supabaseClient.from("treino_execucoes")
+            .select {
+                filter { eq("usuario_id", userId) }
+                order("data", Order.DESCENDING)
+            }
+            .decodeList<ExecucaoDto>()
+            .map {
+                ExecucaoTreino(
+                    treinoId = it.treinoId,
+                    data = it.data,
+                    series = it.series,
+                )
+            }
 }
 
 @Serializable

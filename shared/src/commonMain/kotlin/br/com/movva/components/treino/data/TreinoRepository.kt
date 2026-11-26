@@ -52,6 +52,15 @@ class TreinoRepositoryImpl(
             enviarPendentes(userId)
             val remotos = remoteDataSource.getTreinos(userId)
             remotos.forEach { localDataSource.salvar(userId, it, sincronizado = true) }
+            try {
+                remoteDataSource.getExecucoes(userId).forEach {
+                    localDataSource.salvarExecucao(userId, it, sincronizado = true)
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                println("TREINO_EXEC_SYNC_ERRO: ${e.message}")
+            }
             emit(TreinosResultado.Sucesso(treinosComExecucoes(userId)))
         } catch (e: CancellationException) {
             throw e
