@@ -27,6 +27,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.movva.components.treino.di.treinoModule
 import br.com.movva.components.dieta.di.dietaModule
 import br.com.movva.feature.checkin.di.checkInModule
+import br.com.movva.feature.home.di.homeModule
 
 @Composable
 @Preview
@@ -34,7 +35,7 @@ fun App() {
     val platformContext = rememberPlatformContext()
     KoinApplication(application = {
         providePlatformContext(platformContext)
-        modules(supabaseModule, platformModule(), perfilModule, authModule, treinoModule, dietaModule, checkInModule)
+        modules(supabaseModule, platformModule(), perfilModule, authModule, treinoModule, dietaModule, checkInModule, homeModule)
     }) {
         MovvaTheme {
             Surface(
