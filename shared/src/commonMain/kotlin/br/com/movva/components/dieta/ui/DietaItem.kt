@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -38,8 +39,8 @@ import br.com.movva.components.dieta.domain.Dieta
 @Composable
 fun DietaItem(
     dieta: Dieta,
-    hoje: String,
-    onMarcarFeita: () -> Unit,
+    selecionada: Boolean,
+    onAlternarSelecao: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = MaterialTheme.colorScheme
@@ -52,12 +53,37 @@ fun DietaItem(
             .padding(start = 16.dp, top = 16.dp, bottom = 16.dp, end = 4.dp),
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = dieta.tipoRefeicao,
-                color = colors.onBackground,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold,
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = dieta.tipoRefeicao,
+                    color = colors.onBackground,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                if (dieta.feitaHoje) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "✓ Concluída",
+                        color = VerdeConcluido,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier
+                            .background(VerdeConcluido.copy(alpha = 0.14f), RoundedCornerShape(50))
+                            .padding(horizontal = 8.dp, vertical = 2.dp),
+                    )
+                } else if (dieta.ultimaVezFeita != null) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "✓ Concluído",
+                        color = VerdeConcluido,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier
+                            .background(VerdeConcluido.copy(alpha = 0.14f), RoundedCornerShape(50))
+                            .padding(horizontal = 8.dp, vertical = 2.dp),
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -78,40 +104,31 @@ fun DietaItem(
                     fontWeight = FontWeight.SemiBold,
                 )
             }
-
-            val ultima = dieta.ultimaVezFeita
-            if (!dieta.feitaHoje && ultima != null && ultima != hoje) {
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "Última vez: ${formatarData(ultima)}",
-                    color = colors.onSurfaceVariant,
-                    fontSize = 12.sp,
-                )
-            }
         }
 
-        IconButton(onClick = onMarcarFeita) {
+        val marcada = selecionada || dieta.feitaHoje
+        IconButton(onClick = onAlternarSelecao) {
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .size(32.dp)
                     .clip(CircleShape)
                     .then(
-                        if (dieta.feitaHoje) {
+                        if (marcada) {
                             Modifier.background(VerdeConcluido)
                         } else {
                             Modifier.border(2.dp, colors.onSurfaceVariant.copy(alpha = 0.5f), CircleShape)
                         }
                     )
                     .semantics {
-                        contentDescription = if (dieta.feitaHoje) {
-                            "Desmarcar ${dieta.tipoRefeicao} como feita hoje"
+                        contentDescription = if (marcada) {
+                            "Desmarcar ${dieta.tipoRefeicao}"
                         } else {
-                            "Marcar ${dieta.tipoRefeicao} como feita hoje"
+                            "Selecionar ${dieta.tipoRefeicao}"
                         }
                     },
             ) {
-                if (dieta.feitaHoje) {
+                if (marcada) {
                     Icon(Icons.Filled.Check, contentDescription = null, tint = Color.White, modifier = Modifier.size(20.dp))
                 }
             }
@@ -135,11 +152,9 @@ private fun DietaItemPreview() {
                 tipoRefeicao = "Almoço",
                 descricao = "Arroz, feijão, frango grelhado e salada",
                 data = "2026-10-09",
-                feitaHoje = true,
-                ultimaVezFeita = "2026-10-16",
             ),
-            hoje = "2026-10-16",
-            onMarcarFeita = {},
+            selecionada = true,
+            onAlternarSelecao = {},
             modifier = Modifier.padding(16.dp),
         )
     }
@@ -155,10 +170,9 @@ private fun DietaItemPreviewDescricaoLonga() {
                 tipoRefeicao = "Jantar",
                 descricao = "Omelete com três ovos, queijo, tomate e orégano, acompanhado de uma fatia de pão integral e uma porção de salada verde com azeite e limão",
                 data = "2026-10-08",
-                ultimaVezFeita = "2026-10-12",
             ),
-            hoje = "2026-10-16",
-            onMarcarFeita = {},
+            selecionada = false,
+            onAlternarSelecao = {},
             modifier = Modifier.padding(16.dp),
         )
     }

@@ -9,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -23,6 +24,10 @@ import org.koin.compose.viewmodel.koinViewModel
 fun HomeScreen(
     checkInViewModel: CheckInViewModel = koinViewModel(),
 ) {
+    LaunchedEffect(Unit) {
+        checkInViewModel.carregar()
+    }
+
     val state by checkInViewModel.uiState.collectAsStateWithLifecycle()
     val colors = MaterialTheme.colorScheme
 

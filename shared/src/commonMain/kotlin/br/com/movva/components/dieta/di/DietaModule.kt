@@ -15,6 +15,6 @@ val dietaModule = module {
     single<DietaLocalDataSource> { DietaLocalDataSourceImpl(get()) }
     single<DietaRemoteDataSource> { DietaRemoteDataSourceImpl(get()) }
     single<DietaRepository> { DietaRepositoryImpl(get(), get(), get(), get()) }
-    viewModel { DietaViewModel(get()) }
+    viewModel { DietaViewModel(get(), get()) }
     viewModel { params -> RegistrarRefeicaoViewModel(args = params.get(), dietaRepository = get()) }
 }

@@ -74,15 +74,7 @@ class DietaRepositoryImpl(
     override suspend fun marcarFeitaHoje(dietaId: String, feita: Boolean): Result<Unit> = runCatching {
         val userId = usuarioId()
         val marcacao = RefeicaoFeita(dietaId = dietaId, data = dataDeHojeIso(), feita = feita)
-        localDataSource.salvarFeita(userId, marcacao, sincronizado = false)
-
-        try {
-            enviarFeitasPendentes(userId)
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            println("REFEICAO_FEITA_SYNC_ERRO: ${e.message}")
-        }
+        localDataSource.salvarFeita(userId, marcacao, sincronizado = true)
 
         if (feita) checkInRepository.marcarDietaSeguida(marcacao.data).getOrThrow()
     }
@@ -149,22 +141,5 @@ class DietaRepositoryImpl(
             remoteDataSource.upsert(userId, dieta)
             localDataSource.marcarSincronizado(dieta.id)
         }
-        try {
-            enviarFeitasPendentes(userId)
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            println("REFEICAO_FEITA_SYNC_ERRO: ${e.message}")
-        }
-    }
-
-    private suspend fun enviarFeitasPendentes(userId: String) {
-        val dietasPendentes = localDataSource.getNaoSincronizados(userId).map { it.id }.toSet()
-        localDataSource.getFeitasNaoSincronizadas(userId)
-            .filter { it.dietaId !in dietasPendentes }
-            .forEach { marcacao ->
-                remoteDataSource.upsertFeita(userId, marcacao)
-                localDataSource.marcarFeitaSincronizada(marcacao.dietaId, marcacao.data)
-            }
     }
 }
