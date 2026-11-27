@@ -1,7 +1,6 @@
 package br.com.movva.components.dieta.data
 
 import br.com.movva.components.dieta.domain.Dieta
-import br.com.movva.components.dieta.domain.ItemRefeicao
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.query.Order
@@ -27,7 +26,7 @@ class DietaRemoteDataSourceImpl(
                 tipoRefeicao = dieta.tipoRefeicao,
                 descricao = dieta.descricao,
                 data = dieta.data,
-                itens = dieta.itens
+                itens = dieta.itens.map { it.toDto() }
             )
         )
     }
@@ -45,7 +44,7 @@ class DietaRemoteDataSourceImpl(
                     tipoRefeicao = it.tipoRefeicao,
                     descricao = it.descricao,
                     data = it.data,
-                    itens = it.itens
+                    itens = it.itens.map { item -> item.toDomain() }
                 )
             }
 
@@ -78,5 +77,5 @@ private data class DietaDto(
     @SerialName("tipo_refeicao") val tipoRefeicao: String,
     val descricao: String,
     val data: String,
-    val itens: List<ItemRefeicao> = emptyList()
+    val itens: List<ItemRefeicaoDto> = emptyList()
 )

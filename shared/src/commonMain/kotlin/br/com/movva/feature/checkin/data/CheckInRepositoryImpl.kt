@@ -1,20 +1,14 @@
 package br.com.movva.feature.checkin.data
 
-import br.com.movva.auth.AuthRepository
+import br.com.movva.auth.domain.AuthRepository
 import br.com.movva.core.util.dataDeHojeIso
 import br.com.movva.core.util.diaAnteriorIso
 import br.com.movva.feature.checkin.domain.CheckIn
+import br.com.movva.feature.checkin.domain.CheckInRepository
 import kotlinx.coroutines.CancellationException
 
 // janela de dias usada tanto para sincronizar histórico recente quanto para limitar o cálculo da streak
 private const val JANELA_STREAK_DIAS = 400
-
-interface CheckInRepository {
-    suspend fun getCheckInDeHoje(): CheckIn?
-    suspend fun marcarTreinoFeito(data: String): Result<Unit>
-    suspend fun marcarDietaSeguida(data: String): Result<Unit>
-    suspend fun getStreakAtual(): Int
-}
 
 class CheckInRepositoryImpl(
     private val remoteDataSource: CheckInRemoteDataSource,

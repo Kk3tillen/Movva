@@ -2,12 +2,12 @@ package br.com.movva.components.treino.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import br.com.movva.components.treino.data.TreinoRepository
-import br.com.movva.components.treino.data.TreinosResultado
 import br.com.movva.components.treino.domain.ExercicioForm
 import br.com.movva.components.treino.domain.NovoTreinoErros
 import br.com.movva.components.treino.domain.NovoTreinoForm
 import br.com.movva.components.treino.domain.Treino
+import br.com.movva.components.treino.domain.TreinoRepository
+import br.com.movva.components.treino.domain.TreinosResultado
 import br.com.movva.components.treino.domain.toExercicio
 import br.com.movva.components.treino.domain.validarNovoTreino
 import kotlinx.coroutines.Job
@@ -21,6 +21,7 @@ import kotlin.uuid.Uuid
 
 sealed interface TreinosUiState {
     data object Loading : TreinosUiState
+    data object Vazio : TreinosUiState
     data class Dados(val treinos: List<Treino>) : TreinosUiState
     data class Erro(val mensagem: String) : TreinosUiState
 }
@@ -48,10 +49,17 @@ class TreinoViewModel(
 
     fun carregarTreinos() {
         listaJob?.cancel()
+        _treinosState.value = TreinosUiState.Loading
         listaJob = viewModelScope.launch {
             treinoRepository.getTreinos().collect { resultado ->
                 _treinosState.value = when (resultado) {
-                    is TreinosResultado.Sucesso -> TreinosUiState.Dados(resultado.treinos)
+                    is TreinosResultado.Sucesso -> {
+                        if (resultado.treinos.isEmpty()) {
+                            TreinosUiState.Vazio
+                        } else {
+                            TreinosUiState.Dados(resultado.treinos)
+                        }
+                    }
                     is TreinosResultado.Erro -> TreinosUiState.Erro(resultado.mensagem)
                 }
             }

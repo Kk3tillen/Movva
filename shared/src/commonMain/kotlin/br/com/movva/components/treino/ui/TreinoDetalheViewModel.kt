@@ -2,7 +2,7 @@ package br.com.movva.components.treino.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import br.com.movva.components.treino.data.TreinoRepository
+import br.com.movva.components.treino.domain.TreinoRepository
 import br.com.movva.core.util.dataDeHojeIso
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 
 sealed interface TreinoDetalheUiState {
     data object Loading : TreinoDetalheUiState
+    data object Vazio : TreinoDetalheUiState
     data class Erro(val mensagem: String) : TreinoDetalheUiState
     data class Dados(
         val registro: RegistroTreino,
@@ -41,7 +42,13 @@ class TreinoDetalheViewModel(
         _uiState.value = TreinoDetalheUiState.Loading
         viewModelScope.launch {
             treinoRepository.getTreinoDetalhe(treinoId)
-                .onSuccess { _uiState.value = TreinoDetalheUiState.Dados(RegistroTreino.iniciar(it)) }
+                .onSuccess { detalhe ->
+                    _uiState.value = if (detalhe.exercicios.isEmpty()) {
+                        TreinoDetalheUiState.Vazio
+                    } else {
+                        TreinoDetalheUiState.Dados(RegistroTreino.iniciar(detalhe))
+                    }
+                }
                 .onFailure { e ->
                     _uiState.value = TreinoDetalheUiState.Erro(e.message ?: "Não foi possível carregar o treino")
                 }

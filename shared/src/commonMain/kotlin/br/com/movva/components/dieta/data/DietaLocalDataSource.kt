@@ -59,7 +59,7 @@ class DietaLocalDataSourceImpl(
                 descricao = dieta.descricao,
                 dataRefeicao = dieta.data,
                 sincronizado = if (sincronizado) 1L else 0L,
-                itensJson = Json.encodeToString(dieta.itens)
+                itensJson = Json.encodeToString(dieta.itens.map { it.toDto() })
             )
         }
     }
@@ -108,5 +108,5 @@ private fun DietaEntity.toDomain() = Dieta(
     tipoRefeicao = tipoRefeicao,
     descricao = descricao,
     data = dataRefeicao,
-    itens = Json.decodeFromString(itensJson)
+    itens = Json.decodeFromString<List<ItemRefeicaoDto>>(itensJson).map { it.toDomain() }
 )

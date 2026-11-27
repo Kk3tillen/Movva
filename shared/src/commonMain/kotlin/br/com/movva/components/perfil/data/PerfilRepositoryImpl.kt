@@ -1,19 +1,11 @@
 package br.com.movva.components.perfil.data
 
-import br.com.movva.auth.AuthRepository
-import br.com.movva.components.perfil.domain.Perfil
+import br.com.movva.auth.domain.AuthRepository
+import br.com.movva.components.perfil.domain.PerfilRepository
+import br.com.movva.components.perfil.domain.PerfilResultado
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-
-sealed interface PerfilResultado {
-    data class Sucesso(val perfil: Perfil) : PerfilResultado
-    data class Erro(val mensagem: String) : PerfilResultado
-}
-
-interface PerfilRepository {
-    fun getPerfil(): Flow<PerfilResultado>
-}
 
 class PerfilRepositoryImpl(
     private val remoteDataSource: PerfilRemoteDataSource,

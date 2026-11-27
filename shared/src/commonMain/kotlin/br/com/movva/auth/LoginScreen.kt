@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -24,14 +23,18 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import br.com.movva.core.theme.MovvaTheme
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -41,7 +44,27 @@ fun LoginScreen(
     onLoginSuccess: () -> Unit,
     onCreateAccountClick: () -> Unit,
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    LoginContent(
+        uiState = uiState,
+        onEmailChanged = viewModel::onEmailChanged,
+        onPasswordChanged = viewModel::onPasswordChanged,
+        onLoginClick = { viewModel.login(onSuccess = onLoginSuccess) },
+        onCreateAccountClick = onCreateAccountClick,
+        modifier = modifier,
+    )
+}
+
+@Composable
+fun LoginContent(
+    uiState: LoginUiState,
+    onEmailChanged: (String) -> Unit = {},
+    onPasswordChanged: (String) -> Unit = {},
+    onLoginClick: () -> Unit = {},
+    onCreateAccountClick: () -> Unit = {},
+    modifier: Modifier = Modifier,
+) {
     val colors = MaterialTheme.colorScheme
 
     Column(
@@ -95,7 +118,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(6.dp))
         OutlinedTextField(
             value = uiState.email,
-            onValueChange = viewModel::onEmailChanged,
+            onValueChange = onEmailChanged,
             placeholder = { Text("nome@email.com", color = colors.onSurfaceVariant) },
             singleLine = true,
             shape = RoundedCornerShape(12.dp),
@@ -124,7 +147,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(6.dp))
         OutlinedTextField(
             value = uiState.password,
-            onValueChange = viewModel::onPasswordChanged,
+            onValueChange = onPasswordChanged,
             placeholder = { Text("Sua senha", color = colors.onSurfaceVariant) },
             singleLine = true,
             visualTransformation = PasswordVisualTransformation(),
@@ -156,7 +179,7 @@ fun LoginScreen(
         if (uiState.errorMessage != null) {
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = uiState.errorMessage.orEmpty(),
+                text = uiState.errorMessage,
                 color = colors.error,
                 fontSize = 13.sp,
                 modifier = Modifier.fillMaxWidth(),
@@ -167,7 +190,7 @@ fun LoginScreen(
 
         // Entrar
         Button(
-            onClick = { viewModel.login(onSuccess = onLoginSuccess) },
+            onClick = onLoginClick,
             enabled = !uiState.isLoading,
             shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(containerColor = colors.primary),
@@ -177,7 +200,9 @@ fun LoginScreen(
         ) {
             if (uiState.isLoading) {
                 CircularProgressIndicator(
-                    modifier = Modifier.size(20.dp),
+                    modifier = Modifier
+                        .size(20.dp)
+                        .semantics { contentDescription = "Entrando" },
                     color = colors.onPrimary,
                     strokeWidth = 2.dp,
                 )
@@ -223,5 +248,34 @@ fun LoginScreen(
                 modifier = Modifier.padding(vertical = 4.dp),
             )
         }
+    }
+}
+
+@Preview
+@Composable
+private fun LoginPreviewPadrao() {
+    MovvaTheme {
+        LoginContent(uiState = LoginUiState(email = "ana@movva.com"))
+    }
+}
+
+@Preview
+@Composable
+private fun LoginPreviewCarregando() {
+    MovvaTheme {
+        LoginContent(uiState = LoginUiState(email = "ana@movva.com", isLoading = true))
+    }
+}
+
+@Preview
+@Composable
+private fun LoginPreviewErro() {
+    MovvaTheme {
+        LoginContent(
+            uiState = LoginUiState(
+                email = "ana@movva.com",
+                errorMessage = "E-mail ou senha inválidos",
+            )
+        )
     }
 }

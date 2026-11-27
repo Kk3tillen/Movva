@@ -50,6 +50,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -107,7 +109,9 @@ fun RegistrarRefeicaoScreen(
         onSalvar = viewModel::salvar,
     )
 
-    state.edicao?.let { edicao ->
+    val dados = state as? RegistrarRefeicaoUiState.Dados
+
+    dados?.edicao?.let { edicao ->
         QuantidadeSheet(
             edicao = edicao,
             onPorcaoChange = viewModel::onPorcaoChange,
@@ -117,11 +121,11 @@ fun RegistrarRefeicaoScreen(
         )
     }
 
-    state.conflito?.let {
+    dados?.conflito?.let {
         AlertDialog(
             onDismissRequest = viewModel::onFecharConflito,
-            title = { Text("Já existe um ${state.tipo.titulo} hoje") },
-            text = { Text("Quer somar estes alimentos ao ${state.tipo.titulo} já registrado ou criar outra refeição?") },
+            title = { Text("Já existe um ${dados.tipo.titulo} hoje") },
+            text = { Text("Quer somar estes alimentos ao ${dados.tipo.titulo} já registrado ou criar outra refeição?") },
             confirmButton = { TextButton(onClick = viewModel::onSomarAExistente) { Text("Somar") } },
             dismissButton = { TextButton(onClick = viewModel::onCriarOutra) { Text("Criar outra") } },
         )
@@ -181,19 +185,21 @@ fun RegistrarRefeicaoContent(
             )
         }
 
-        when {
-            state.carregando -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
+        when (state) {
+            is RegistrarRefeicaoUiState.Carregando -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(
+                    modifier = Modifier.semantics { contentDescription = "Carregando refeição" }
+                )
             }
 
-            state.erroCarregar != null -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            is RegistrarRefeicaoUiState.Erro -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(state.erroCarregar, color = colors.error, fontSize = 14.sp)
+                    Text(state.mensagem, color = colors.error, fontSize = 14.sp)
                     TextButton(onClick = onTentarNovamente) { Text("Tentar novamente") }
                 }
             }
 
-            else -> {
+            is RegistrarRefeicaoUiState.Dados -> {
                 LazyColumn(
                     modifier = Modifier.weight(1f),
                     contentPadding = PaddingValues(start = 24.dp, end = 24.dp, bottom = 16.dp),
@@ -405,7 +411,7 @@ private fun ListaVazia() {
 }
 
 @Composable
-private fun Rodape(state: RegistrarRefeicaoUiState, onSalvar: () -> Unit) {
+private fun Rodape(state: RegistrarRefeicaoUiState.Dados, onSalvar: () -> Unit) {
     val colors = MaterialTheme.colorScheme
     Column(
         modifier = Modifier
@@ -557,10 +563,28 @@ private fun ChipMedida(texto: String, ativo: Boolean, onClick: () -> Unit) {
 
 @Preview
 @Composable
+private fun RegistrarRefeicaoPreviewCarregando() {
+    MovvaTheme {
+        RegistrarRefeicaoContent(state = RegistrarRefeicaoUiState.Carregando())
+    }
+}
+
+@Preview
+@Composable
+private fun RegistrarRefeicaoPreviewErro() {
+    MovvaTheme {
+        RegistrarRefeicaoContent(
+            state = RegistrarRefeicaoUiState.Erro("Não foi possível carregar a refeição")
+        )
+    }
+}
+
+@Preview
+@Composable
 private fun RegistrarRefeicaoPreviewVazia() {
     MovvaTheme {
         RegistrarRefeicaoContent(
-            state = RegistrarRefeicaoUiState(
+            state = RegistrarRefeicaoUiState.Dados(
                 tipo = TipoRefeicao.ALMOCO,
                 sugestoes = listOfNotNull(CatalogoAlimentos.porId("arroz-branco"), CatalogoAlimentos.porId("frango-grelhado")),
             ),
@@ -576,7 +600,7 @@ private fun RegistrarRefeicaoPreviewComItens() {
     val feijao = CatalogoAlimentos.porId("feijao-carioca")!!
     MovvaTheme {
         RegistrarRefeicaoContent(
-            state = RegistrarRefeicaoUiState(
+            state = RegistrarRefeicaoUiState.Dados(
                 tipo = TipoRefeicao.ALMOCO,
                 itens = listOf(
                     arroz.item(1.0, arroz.porcoes.first()),
@@ -593,6 +617,6 @@ private fun RegistrarRefeicaoPreviewComItens() {
 @Composable
 private fun RegistrarRefeicaoPreviewBusca() {
     MovvaTheme {
-        RegistrarRefeicaoContent(state = RegistrarRefeicaoUiState(busca = "ar"))
+        RegistrarRefeicaoContent(state = RegistrarRefeicaoUiState.Dados(busca = "ar"))
     }
 }

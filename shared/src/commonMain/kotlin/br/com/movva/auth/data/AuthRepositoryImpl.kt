@@ -1,5 +1,8 @@
-package br.com.movva.auth
+package br.com.movva.auth.data
 
+import br.com.movva.auth.domain.AuthRepository
+import br.com.movva.auth.domain.InvalidCredentialsException
+import br.com.movva.auth.domain.LoggedInUser
 import br.com.movva.shared.db.MovvaDatabase
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.postgrest
@@ -10,20 +13,6 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
-
-data class LoggedInUser(
-    val id: String,
-    val nome: String,
-    val userTag: String,
-)
-
-class InvalidCredentialsException : Exception("invalid_credentials")
-
-interface AuthRepository {
-    suspend fun login(email: String, senha: String): Result<Unit>
-    suspend fun logout()
-    suspend fun currentUser(): LoggedInUser?
-}
 
 class AuthRepositoryImpl(
     private val client: SupabaseClient,

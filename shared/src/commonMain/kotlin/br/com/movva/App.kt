@@ -9,24 +9,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.movva.auth.AuthGateViewModel
 import br.com.movva.auth.LoginScreen
 import br.com.movva.auth.StartDestination
+import br.com.movva.components.dieta.di.dietaModule
+import br.com.movva.components.perfil.di.perfilModule
+import br.com.movva.components.treino.di.treinoModule
 import br.com.movva.core.di.platformModule
 import br.com.movva.core.di.providePlatformContext
 import br.com.movva.core.di.rememberPlatformContext
+import br.com.movva.core.navigation.MainScreen
 import br.com.movva.core.network.supabaseModule
 import br.com.movva.core.theme.MovvaTheme
-import br.com.movva.components.perfil.di.perfilModule
-import br.com.movva.core.navigation.MainScreen
+import br.com.movva.feature.checkin.di.checkInModule
+import br.com.movva.feature.home.di.homeModule
 import br.com.movva.modules.authModule
 import org.koin.compose.KoinApplication
 import org.koin.compose.viewmodel.koinViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import br.com.movva.components.treino.di.treinoModule
-import br.com.movva.components.dieta.di.dietaModule
-import br.com.movva.feature.checkin.di.checkInModule
 
 @Composable
 @Preview
@@ -34,7 +37,16 @@ fun App() {
     val platformContext = rememberPlatformContext()
     KoinApplication(application = {
         providePlatformContext(platformContext)
-        modules(supabaseModule, platformModule(), perfilModule, authModule, treinoModule, dietaModule, checkInModule)
+        modules(
+            supabaseModule,
+            platformModule(),
+            perfilModule,
+            authModule,
+            treinoModule,
+            dietaModule,
+            checkInModule,
+            homeModule,
+        )
     }) {
         MovvaTheme {
             Surface(
@@ -69,6 +81,8 @@ private fun SplashScreen() {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        CircularProgressIndicator()
+        CircularProgressIndicator(
+            modifier = Modifier.semantics { contentDescription = "Carregando aplicativo" }
+        )
     }
 }

@@ -20,6 +20,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -28,6 +29,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -70,6 +73,7 @@ fun DietasScreen(
         onRegistrarClick = onRegistrarClick,
         onDietaClick = onDietaClick,
         onMarcarFeita = viewModel::onMarcarFeita,
+        onTentarNovamente = viewModel::carregarDietas,
     )
 }
 
@@ -81,6 +85,7 @@ fun DietasContent(
     onRegistrarClick: () -> Unit = {},
     onDietaClick: (Dieta) -> Unit = {},
     onMarcarFeita: (Dieta) -> Unit = {},
+    onTentarNovamente: () -> Unit = {},
     hoje: String = dataDeHojeIso(),
 ) {
     val colors = MaterialTheme.colorScheme
@@ -140,37 +145,41 @@ fun DietasContent(
             ) {
                 when (state) {
                     is DietasUiState.Loading -> Centralizado {
-                        CircularProgressIndicator()
+                        CircularProgressIndicator(
+                            modifier = Modifier.semantics { contentDescription = "Carregando refeições" }
+                        )
+                    }
+
+                    is DietasUiState.Vazio -> Centralizado {
+                        Text(
+                            text = "Nenhuma refeição registrada ainda",
+                            color = colors.onSurfaceVariant,
+                            fontSize = 14.sp,
+                        )
                     }
 
                     is DietasUiState.Erro -> Centralizado {
-                        Text(text = state.mensagem, color = colors.error, fontSize = 14.sp)
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(text = state.mensagem, color = colors.error, fontSize = 14.sp)
+                            Spacer(modifier = Modifier.height(8.dp))
+                            TextButton(onClick = onTentarNovamente) { Text("Tentar novamente") }
+                        }
                     }
 
                     is DietasUiState.Dados -> {
-                        if (state.dietas.isEmpty()) {
-                            Centralizado {
-                                Text(
-                                    text = "Nenhuma refeição registrada ainda",
-                                    color = colors.onSurfaceVariant,
-                                    fontSize = 14.sp,
+                        LazyColumn(
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                            contentPadding = PaddingValues(vertical = 16.dp),
+                        ) {
+                            items(state.dietas, key = { it.id }) { dieta ->
+                                DietaItem(
+                                    dieta = dieta,
+                                    hoje = hoje,
+                                    onMarcarFeita = { onMarcarFeita(dieta) },
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(12.dp))
+                                        .clickable { onDietaClick(dieta) },
                                 )
-                            }
-                        } else {
-                            LazyColumn(
-                                verticalArrangement = Arrangement.spacedBy(12.dp),
-                                contentPadding = PaddingValues(vertical = 16.dp),
-                            ) {
-                                items(state.dietas, key = { it.id }) { dieta ->
-                                    DietaItem(
-                                        dieta = dieta,
-                                        hoje = hoje,
-                                        onMarcarFeita = { onMarcarFeita(dieta) },
-                                        modifier = Modifier
-                                            .clip(RoundedCornerShape(12.dp))
-                                            .clickable { onDietaClick(dieta) },
-                                    )
-                                }
                             }
                         }
                     }
@@ -187,6 +196,14 @@ private fun Centralizado(conteudo: @Composable () -> Unit) {
         contentAlignment = Alignment.Center,
     ) {
         conteudo()
+    }
+}
+
+@Preview
+@Composable
+private fun DietasPreviewCarregando() {
+    MovvaTheme {
+        DietasContent(state = DietasUiState.Loading)
     }
 }
 
@@ -225,6 +242,14 @@ private fun DietasPreviewComItens() {
 @Composable
 private fun DietasPreviewVazia() {
     MovvaTheme {
-        DietasContent(state = DietasUiState.Dados(emptyList()))
+        DietasContent(state = DietasUiState.Vazio)
+    }
+}
+
+@Preview
+@Composable
+private fun DietasPreviewErro() {
+    MovvaTheme {
+        DietasContent(state = DietasUiState.Erro("Não foi possível carregar as refeições"))
     }
 }

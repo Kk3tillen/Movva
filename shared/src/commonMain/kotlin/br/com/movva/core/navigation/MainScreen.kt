@@ -40,7 +40,10 @@ fun MainScreen(onLogout: () -> Unit) {
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
             when (abaAtual) {
-                Aba.INICIO -> HomeScreen()
+                Aba.INICIO -> HomeScreen(
+                    onIrParaTreinos = { abaAtual = Aba.TREINOS },
+                    onIrParaDieta = { abaAtual = Aba.DIETAS },
+                )
                 Aba.TREINOS -> TreinosTab()
                 Aba.DESAFIOS -> BlankScreen(title = abaAtual.titulo)
                 Aba.DIETAS -> if (registrandoRefeicao) {

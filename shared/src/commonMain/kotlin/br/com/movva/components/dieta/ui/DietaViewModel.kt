@@ -2,9 +2,9 @@ package br.com.movva.components.dieta.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import br.com.movva.components.dieta.data.DietaRepository
-import br.com.movva.components.dieta.data.DietasResultado
 import br.com.movva.components.dieta.domain.Dieta
+import br.com.movva.components.dieta.domain.DietaRepository
+import br.com.movva.components.dieta.domain.DietasResultado
 import br.com.movva.core.util.dataDeHojeIso
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 
 sealed interface DietasUiState {
     data object Loading : DietasUiState
+    data object Vazio : DietasUiState
     data class Dados(val dietas: List<Dieta>) : DietasUiState
     data class Erro(val mensagem: String) : DietasUiState
 }
@@ -30,10 +31,17 @@ class DietaViewModel(
 
     fun carregarDietas() {
         listaJob?.cancel()
+        _dietasState.value = DietasUiState.Loading
         listaJob = viewModelScope.launch {
             dietaRepository.getDietas().collect { resultado ->
                 _dietasState.value = when (resultado) {
-                    is DietasResultado.Sucesso -> DietasUiState.Dados(resultado.dietas)
+                    is DietasResultado.Sucesso -> {
+                        if (resultado.dietas.isEmpty()) {
+                            DietasUiState.Vazio
+                        } else {
+                            DietasUiState.Dados(resultado.dietas)
+                        }
+                    }
                     is DietasResultado.Erro -> DietasUiState.Erro(resultado.mensagem)
                 }
             }

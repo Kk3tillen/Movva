@@ -4,8 +4,8 @@ import br.com.movva.components.dieta.data.DietaLocalDataSource
 import br.com.movva.components.dieta.data.DietaLocalDataSourceImpl
 import br.com.movva.components.dieta.data.DietaRemoteDataSource
 import br.com.movva.components.dieta.data.DietaRemoteDataSourceImpl
-import br.com.movva.components.dieta.data.DietaRepository
 import br.com.movva.components.dieta.data.DietaRepositoryImpl
+import br.com.movva.components.dieta.domain.DietaRepository
 import br.com.movva.components.dieta.ui.DietaViewModel
 import br.com.movva.components.dieta.ui.RegistrarRefeicaoViewModel
 import org.koin.core.module.dsl.viewModel

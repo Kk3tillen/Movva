@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.sp
 import br.com.movva.components.treino.domain.formatarData
 import br.com.movva.core.theme.MovvaTheme
 import br.com.movva.core.theme.VerdeConcluido
+import br.com.movva.core.ui.Selo
 import br.com.movva.components.treino.domain.Treino
 
 @Composable

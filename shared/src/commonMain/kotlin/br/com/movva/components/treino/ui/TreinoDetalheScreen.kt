@@ -71,6 +71,7 @@ import br.com.movva.components.treino.domain.formatarData
 import br.com.movva.core.theme.MovvaTheme
 import br.com.movva.core.theme.VerdeConcluido
 import br.com.movva.core.ui.BotaoTracejado
+import br.com.movva.core.ui.Selo
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
@@ -158,7 +159,17 @@ fun TreinoDetalheContent(
 
         when (state) {
             is TreinoDetalheUiState.Loading -> Centralizado {
-                CircularProgressIndicator()
+                CircularProgressIndicator(
+                    modifier = Modifier.semantics { contentDescription = "Carregando treino" }
+                )
+            }
+
+            is TreinoDetalheUiState.Vazio -> Centralizado {
+                Text(
+                    text = "Nenhum exercício neste treino ainda",
+                    color = colors.onSurfaceVariant,
+                    fontSize = 14.sp,
+                )
             }
 
             is TreinoDetalheUiState.Erro -> Centralizado {
@@ -169,42 +180,32 @@ fun TreinoDetalheContent(
             }
 
             is TreinoDetalheUiState.Dados -> {
-                if (state.registro.exercicios.isEmpty()) {
-                    Centralizado {
-                        Text(
-                            text = "Nenhum exercício neste treino ainda",
-                            color = colors.onSurfaceVariant,
-                            fontSize = 14.sp,
+                LazyColumn(
+                    modifier = Modifier.weight(1f),
+                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    items(state.registro.exercicios, key = { it.id }) { exercicio ->
+                        ExercicioCard(
+                            exercicio = exercicio,
+                            expandido = state.registro.expandidoId == exercicio.id,
+                            onClick = { onExercicioClick(exercicio.id) },
+                            onRepsChange = { i, v -> onRepsChange(exercicio.id, i, v) },
+                            onCargaChange = { i, v -> onCargaChange(exercicio.id, i, v) },
+                            onSerieCheck = { i -> onSerieCheck(exercicio.id, i) },
+                            onAdicionarSerie = { onAdicionarSerie(exercicio.id) },
+                            onRemoverSerie = { i -> onRemoverSerie(exercicio.id, i) },
                         )
                     }
-                } else {
-                    LazyColumn(
-                        modifier = Modifier.weight(1f),
-                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                    ) {
-                        items(state.registro.exercicios, key = { it.id }) { exercicio ->
-                            ExercicioCard(
-                                exercicio = exercicio,
-                                expandido = state.registro.expandidoId == exercicio.id,
-                                onClick = { onExercicioClick(exercicio.id) },
-                                onRepsChange = { i, v -> onRepsChange(exercicio.id, i, v) },
-                                onCargaChange = { i, v -> onCargaChange(exercicio.id, i, v) },
-                                onSerieCheck = { i -> onSerieCheck(exercicio.id, i) },
-                                onAdicionarSerie = { onAdicionarSerie(exercicio.id) },
-                                onRemoverSerie = { i -> onRemoverSerie(exercicio.id, i) },
-                            )
-                        }
-                    }
+                }
 
-                    if (state.podeFinalizar) {
-                        RodapeFinalizar(
-                            texto = if (state.registro.treino.feitoHoje) "Atualizar treino de hoje" else "Finalizar treino",
-                            finalizando = state.finalizando,
-                            erro = state.erroFinalizar,
-                            onFinalizar = onFinalizar,
-                        )
-                    }
+                if (state.podeFinalizar) {
+                    RodapeFinalizar(
+                        texto = if (state.registro.treino.feitoHoje) "Atualizar treino de hoje" else "Finalizar treino",
+                        finalizando = state.finalizando,
+                        erro = state.erroFinalizar,
+                        onFinalizar = onFinalizar,
+                    )
                 }
             }
         }
@@ -536,19 +537,6 @@ private fun IndicadorCircular(
 }
 
 @Composable
-internal fun Selo(texto: String, cor: Color) {
-    Text(
-        text = texto,
-        color = cor,
-        fontSize = 12.sp,
-        fontWeight = FontWeight.SemiBold,
-        modifier = Modifier
-            .background(cor.copy(alpha = 0.14f), RoundedCornerShape(50))
-            .padding(horizontal = 10.dp, vertical = 4.dp),
-    )
-}
-
-@Composable
 private fun RodapeFinalizar(
     texto: String,
     finalizando: Boolean,
@@ -577,7 +565,9 @@ private fun RodapeFinalizar(
         ) {
             if (finalizando) {
                 CircularProgressIndicator(
-                    modifier = Modifier.size(20.dp),
+                    modifier = Modifier
+                        .size(20.dp)
+                        .semantics { contentDescription = "Finalizando treino" },
                     color = colors.onPrimary,
                     strokeWidth = 2.dp,
                 )
@@ -647,6 +637,14 @@ private fun TreinoDetalhePreviewInicio() {
 private fun TreinoDetalhePreviewCarregando() {
     MovvaTheme {
         TreinoDetalheContent(state = TreinoDetalheUiState.Loading)
+    }
+}
+
+@Preview
+@Composable
+private fun TreinoDetalhePreviewVazio() {
+    MovvaTheme {
+        TreinoDetalheContent(state = TreinoDetalheUiState.Vazio)
     }
 }
 

@@ -1,7 +1,5 @@
 package br.com.movva.components.dieta.domain
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 import kotlin.math.roundToInt
 
 // O título é o que fica salvo em Dieta.tipoRefeicao (compatível com as refeições antigas, em texto livre).
@@ -62,19 +60,18 @@ data class Alimento(
     fun porcao(nome: String?): Porcao? = porcoes.firstOrNull { it.nome == nome }
 }
 
-// Salvo como JSON (itensJson no SQLite, coluna jsonb no Supabase).
-@Serializable
+// Salvo como JSON (itensJson no SQLite, coluna jsonb no Supabase) via ItemRefeicaoDto em data.
 data class ItemRefeicao(
-    @SerialName("alimento_id") val alimentoId: String,
+    val alimentoId: String,
     val nome: String,
     val icone: String,
-    @SerialName("quantidade_g") val quantidadeG: Double,
-    @SerialName("porcao_nome") val porcaoNome: String? = null,
-    @SerialName("quantidade_porcao") val quantidadePorcao: Double? = null,
+    val quantidadeG: Double,
+    val porcaoNome: String? = null,
+    val quantidadePorcao: Double? = null,
     val kcal: Double,
-    @SerialName("proteina_g") val proteinaG: Double,
-    @SerialName("carbo_g") val carboG: Double,
-    @SerialName("gordura_g") val gorduraG: Double,
+    val proteinaG: Double,
+    val carboG: Double,
+    val gorduraG: Double,
 ) {
     // "150g · 1 xícara" ou só "150g"
     val porcaoDescricao: String

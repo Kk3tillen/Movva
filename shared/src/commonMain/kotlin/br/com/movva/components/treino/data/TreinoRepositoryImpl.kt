@@ -1,35 +1,19 @@
 package br.com.movva.components.treino.data
 
-import br.com.movva.auth.AuthRepository
+import br.com.movva.auth.domain.AuthRepository
 import br.com.movva.components.treino.domain.Exercicio
 import br.com.movva.components.treino.domain.Serie
 import br.com.movva.components.treino.domain.Treino
 import br.com.movva.components.treino.domain.TreinoDetalhe
+import br.com.movva.components.treino.domain.TreinoRepository
+import br.com.movva.components.treino.domain.TreinosResultado
 import br.com.movva.core.util.dataDeHojeIso
-import br.com.movva.feature.checkin.data.CheckInRepository
+import br.com.movva.feature.checkin.domain.CheckInRepository
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
-
-sealed interface TreinosResultado {
-    data class Sucesso(val treinos: List<Treino>) : TreinosResultado
-    data class Erro(val mensagem: String) : TreinosResultado
-}
-
-interface TreinoRepository {
-    fun getTreinos(): Flow<TreinosResultado>
-    suspend fun salvar(
-        nome: String,
-        tipo: String,
-        duracaoMin: Int?,
-        observacoes: String?,
-        exercicios: List<Exercicio> = emptyList()
-    ): Result<Unit>
-    suspend fun getTreinoDetalhe(id: String): Result<TreinoDetalhe>
-    suspend fun finalizarTreino(treinoId: String, exercicios: List<Exercicio>): Result<Unit>
-}
 
 class TreinoRepositoryImpl(
     private val remoteDataSource: TreinoRemoteDataSource,
@@ -67,7 +51,7 @@ class TreinoRepositoryImpl(
         return localDataSource.getTreinos(userId).map { it.copy(ultimaExecucao = ultimas[it.id]) }
     }
 
-     @OptIn(ExperimentalUuidApi::class)
+    @OptIn(ExperimentalUuidApi::class)
     override suspend fun salvar(
         nome: String,
         tipo: String,
@@ -144,7 +128,7 @@ class TreinoRepositoryImpl(
         }
     }
 
-     override suspend fun finalizarTreino(
+    override suspend fun finalizarTreino(
         treinoId: String,
         exercicios: List<Exercicio>
     ): Result<Unit> = runCatching {
